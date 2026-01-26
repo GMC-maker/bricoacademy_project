@@ -1,0 +1,30 @@
+### GET todos los cursos
+GET http://localhost:3000/api/courses
+
+### GET curso por id
+GET http://localhost:3000/api/courses/1
+
+### POST nuevo curso
+POST http://localhost:3000/api/courses
+Content-Type: application/json
+
+{
+  "name": "Curso Fontanería Básica",
+  "description": "Introducción a fontanería",
+  "online": 0,
+  "start_date": "2026-03-01",
+  "duration": 30,
+  "price": "150.00",
+  "image_url": null
+}
+
+### PUT curso
+PUT http://localhost:3000/api/courses/1
+Content-Type: application/json
+
+{
+  "duration": 35
+}
+
+### DELETE curso
+DELETE http://localhost:3000/api/courses/99
