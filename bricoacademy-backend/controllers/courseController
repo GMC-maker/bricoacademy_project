@@ -4,12 +4,29 @@ const courseService = require("../services/courseService");
 
 class CourseController {
 	async getAllCourses(req, res) {
+		const { start_date, start_date_from, start_date_to } = req.query;
+
+		//Caso no permitido: solo una de las dos
+		if (
+			(start_date_from && !start_date_to) ||
+			(!start_date_from && start_date_to)
+		) {
+			return res.status(400).json({
+				ok: false,
+				datos: null,
+				mensaje:
+					"Debes indicar start_date_from y start_date_to juntos para un rango",
+			});
+		}
 		try {
-			const courses = await courseService.getAllCourses();
+			const courses = await courseService.getAllCourses(req.query);
 			return res.status(200).json({
 				ok: true,
 				datos: courses,
-				mensaje: "Cursos recuperados correctamente",
+				mensaje:
+					courses.length === 0
+						? "No hay cursos para los filtros indicados"
+						: "Cursos recuperados correctamente",
 			});
 		} catch (err) {
 			logMensaje("Error en getAllCourses:", err);

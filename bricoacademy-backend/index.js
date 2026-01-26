@@ -18,32 +18,28 @@ app.use((req, res, next) => {
 	console.log("METHOD:", req.method, "URL:", req.url);
 	next();
 });
-// ============================================
+
 // MIDDLEWARE - CORS - Cualquier origen
-// ============================================
+
 app.use(cors());
 
-// ============================================
 // MIDDLEWARE - ARCHIVOS ESTÁTICOS
-// ============================================
+
 app.use(express.static(path.join(__dirname, "public")));
 
-// ============================================
 // RUTAS - API REST
-// ============================================
+
 app.use("/api/teachers", teachersRoutes);
 app.use("/api/courses", coursesRoutes);
 
-// ============================================
 // RUTAS - SPA (Catch-all)
-// ============================================
+
 // app.get("*", (req, res) => {
 //   res.sendFile(path.join(__dirname, "public", "index.html"));
 // });
 
-// ============================================
 // SERVIDOR
-// ============================================
+
 app.listen(port, () => {
 	logMensaje(`Servidor escuchando en el puerto ${port}`);
 });

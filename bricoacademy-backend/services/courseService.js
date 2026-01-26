@@ -1,19 +1,38 @@
 // services/courseService.js
 // Servicio para interactuar con el modelo Sequelize `Cursos`
-
+const { Op } = require("sequelize"); // arriba del archivo
 // Recupera la función de inicialización de modelos
 const initModels = require("../models/init-models.js").initModels;
 // Crea la instancia de sequelize con la conexión a la base de datos
 const sequelize = require("../config/sequelize.js");
 // Carga las definiciones del modelo en sequelize
 const models = initModels(sequelize);
-// Recupera el modelo director
+// Recupera el modelo course
 const Course = models.course;
 
 class CourseService {
-	async getAllCourses() {
+	async getAllCourses(filters = {}) {
+		const where = {};
+		//si esta online = 1 sino = 0
+		if (filters.online !== undefined) {
+			where.online =
+				filters.online === "1" ||
+				filters.online === 1 ||
+				filters.online === true ||
+				filters.online === "true";
+		}
+
+		// Fechas: exacta o rango
+		if (filters.start_date) {
+			where.start_date = filters.start_date;
+		} else if (filters.start_date_from && filters.start_date_to) {
+			where.start_date = {
+				[Op.between]: [filters.start_date_from, filters.start_date_to],
+			};
+		}
+
 		// Devuelve todos los cursos.
-		const result = await Course.findAll();
+		const result = await Course.findAll({ where });
 		return result;
 	}
 
@@ -42,9 +61,7 @@ class CourseService {
 			where: { id_course: course.id_course },
 		});
 
-		// Si el numero de filas afectadas por la actualización es cero
-		// y existe el registro para ese curso, es que no hay cambios en los datos
-		// la actualización
+		// Si numFilas es 0 y existe, es que no hay cambios en los datos.
 
 		if (numFilas == 0 && (await Course.findByPk(course.id_course))) {
 			numFilas = 1; // Devuelvo uno para indicar que todo ha ido bien

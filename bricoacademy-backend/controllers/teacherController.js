@@ -5,7 +5,7 @@ const teacherService = require("../services/teacherService");
 class TeacherController {
 	async getAllTeachers(req, res) {
 		try {
-			const teachers = await teacherService.getAllTeachers();
+			const teachers = await teacherService.getAllTeachers(req.query);
 			return res.status(200).json({
 				ok: true,
 				datos: teachers,

@@ -1,6 +1,18 @@
 ### GET todos los cursos
 GET http://localhost:3000/api/courses
 
+### GET cursos que estan online=1
+GET http://localhost:3000/api/courses?online=1
+
+###GET de cursos a partir de una fecha:
+GET http://localhost:3000/api/courses?start_date=2026-02-01
+
+###GET de cursos a partir de un rango (inicio -fin)
+GET http://localhost:3000/api/courses?start_date_from=2026-02-01&start_date_to=2027-02-01
+
+###GET de cursos a partir de una fecha qcon error tiene que escoger inicio y final
+GET http://localhost:3000/api/courses?start_date_from=2027-02-01
+
 ### GET curso por id
 GET http://localhost:3000/api/courses/1
 
