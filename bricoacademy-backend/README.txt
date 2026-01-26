@@ -6,11 +6,11 @@ Backend del proyecto BricoAcademy, una aplicación web para la gestión de profe
 
 ## 🔗 Repositorio en GitHub
 
-👉 https://github.com/TU_USUARIO/bricoacademy
+https://github.com/GMC-maker/bricoacademy_project.git
 
 ---
 
-## ⚙️ Configuración y ejecución del proyecto
+## Configuración y ejecución del proyecto
 
 ### Requisitos Previos
 - Instalar Node.js
@@ -22,7 +22,7 @@ Backend del proyecto BricoAcademy, una aplicación web para la gestión de profe
 
 ### Backend
 
-1️⃣ Entrar en la carpeta backend:
+1Entrar en la carpeta backend:
 ```bash
   cd bricoacademy-backend
 
@@ -48,7 +48,7 @@ npm run dev
 El backend se ejecutará en:
 http://localhost:3000
 
-🧪 Pruebas
+Pruebas
 
 La API REST ha sido probada utilizando Postman y la extensión REST Client de Visual Studio Code
 

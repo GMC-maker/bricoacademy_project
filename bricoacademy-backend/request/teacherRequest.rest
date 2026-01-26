@@ -15,18 +15,18 @@ Content-Type: application/json
 
 {
   "dni": "99999999Z",
-  "fullname": "Profesor Prueba",
+  "fullname": "Profesor Prueba2",
   "email": "prueba@correo.com",
   "active": 1,
   "status": "ALTA",
   "teaching_hours": 10,
   "hourly_rate": "25.00",
   "hire_date": "2026-02-01",
-  "image_url": null
+  "image_url": "null"
 }
 
 ### PUT profesor (id existente)
-PUT http://localhost:3000/api/teachers/1
+PUT http://localhost:3000/api/teachers/4
 Content-Type: application/json
 
 {
