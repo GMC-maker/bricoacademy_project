@@ -2,7 +2,6 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 
-
 /*he creado un tema personalizado para aplicar estilos */
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
@@ -19,8 +18,9 @@ const theme = createTheme({
 	palette: {
 		primary: {
 			main: "#b8bf9b",
-		}, secondary:{
-			main:"#ada588",
+		},
+		secondary: {
+			main: "#ada588",
 		},
 	},
 });

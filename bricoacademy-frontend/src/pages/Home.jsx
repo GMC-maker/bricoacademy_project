@@ -1,9 +1,16 @@
-import { Typography } from "@mui/material";
+import { Outlet } from "react-router-dom";
+import { Box } from "@mui/material";
+import NavBar from "../components/NavBar";
+import ScrollTopButton from "../components/ScrollTopButton";
 
 export default function Home() {
 	return (
-		<Typography variant='h4' component='h1'>
-			Bienvenido a BricoAcademy
-		</Typography>
+		<>
+			<NavBar />
+			<Box sx={{ p: 2 }}>
+				<Outlet />
+			</Box>
+			<ScrollTopButton />
+		</>
 	);
 }

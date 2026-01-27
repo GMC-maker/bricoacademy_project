@@ -1,9 +1,9 @@
 import { Typography } from "@mui/material";
 
-export default function Teachers() {
+export default function inicio() {
 	return (
 		<Typography variant='h4' component='h1'>
-			Listados de profesores
+			Bienvenido a BricoAcademy
 		</Typography>
 	);
 }

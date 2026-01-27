@@ -1,28 +1,29 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Box } from "@mui/material";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
-import NavBar from "./components/NavBar";
 import Home from "./pages/Home";
-import Teachers from "./pages/Teachers";
-import Courses from "./pages/Courses";
 import ErrorPage from "./pages/ErrorPage";
-import ScrollTopButton from "./components/ScrollTopButton";
 
+import Inicio from "./components/Inicio";
+import ListadoTeachers from "./components/ListadoTeachers";
+import ListadoCourses from "./components/ListadoCourses";
+import ListadoTeachersFiltro from "./components/ListadoTeachersFiltro";
+import ListadoCoursesFiltro from "./components/ListadoCoursesFiltro";
+
+const router = createBrowserRouter([
+	{
+		path: "/",
+		Component: Home,
+		errorElement: <ErrorPage />,
+		children: [
+			{ index: true, Component: Inicio },
+			{ path: "teachers", Component: ListadoTeachers },
+			{ path: "courses", Component: ListadoCourses },
+			{ path: "teachers/filter", Component: ListadoTeachersFiltro },
+			{ path: "courses/filter", Component: ListadoCoursesFiltro.jsx },
+		],
+	},
+]);
 
 export default function App() {
-	return (
-		<BrowserRouter>
-			<NavBar />
-			<Box sx={{ p: 2 }}>
-				<Routes>
-					<Route path='/' element={<Home />} />
-					<Route path='/teachers' element={<Teachers />} />
-					<Route path='/courses' element={<Courses />} />
-					<Route path='*' element={<ErrorPage />} />
-				</Routes>
-			</Box>
-
-			<ScrollTopButton />
-		</BrowserRouter>
-	);
+	return <RouterProvider router={router} />;
 }
