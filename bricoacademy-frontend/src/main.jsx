@@ -14,6 +14,26 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 const theme = createTheme({
 	typography: {
 		fontFamily: "'ABeeZee', sans-serif",
+		h1: {
+			fontSize: "2.2rem",
+			"@media (min-width:600px)": { fontSize: "2.8rem" },
+		},
+		h2: {
+			fontSize: "1.8rem",
+			"@media (min-width:600px)": { fontSize: "2.2rem" },
+		},
+		h3: {
+			fontSize: "1.6rem",
+			"@media (min-width:600px)": { fontSize: "2rem" },
+		},
+		body1: {
+			fontSize: "0.95rem",
+			"@media (min-width:600px)": { fontSize: "1.05rem" },
+		},
+		body2: {
+			fontSize: "0.85rem",
+			"@media (min-width:600px)": { fontSize: "0.95rem" },
+		},
 	},
 	palette: {
 		primary: {
