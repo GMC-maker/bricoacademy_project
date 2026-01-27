@@ -52,6 +52,10 @@ npm install mysql2
 npm install dotenv
 npm install --save-dev nodemon
 npm install sequelize-auto
+
+or
+
+npm install (dependency) --legacy-peer-deps
 ```
 
 ## 🧩 Configuración del archivo `.env`
