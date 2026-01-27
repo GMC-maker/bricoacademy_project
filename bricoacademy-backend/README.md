@@ -86,3 +86,47 @@ El proyecto incluye un fichero SQL con:
 -La estructura de la base de datos
 
 -Un conjunto de datos iniciales
+
+---
+
+## Infraestructura - Docker LAMP
+
+El proyecto utiliza **Docker Compose** para orquestar un entorno LAMP (Linux, Apache, MySQL, PHP). Esto permite tener MySQL 8.0, phpMyAdmin y Apache preconfigurados sin instalar dependencias localmente.
+
+## Instrucciones de Uso
+
+### Paso 1: Levantar los servicios Docker
+
+Desde la carpeta `docker-lamp/`, ejecuta:
+
+```bash
+docker-compose up -d
+```
+
+Esto inicia tres contenedores: MySQL (puerto 3306), Apache (puerto 80) y phpMyAdmin (puerto 8081). El archivo `.env` contiene las credenciales:
+
+```env
+MYSQL_DATABASE=dbname
+MYSQL_USER=dbuser
+MYSQL_PASSWORD=test
+MYSQL_ROOT_PASSWORD=test
+MYSQL_PORT=3306
+PHPMYADMIN_PORT=8081
+```
+
+### Paso 2: Importar la base de datos
+
+Accede a **phpMyAdmin** en http://localhost:8081 (usuario: `root` / contraseña: `test`). Importa el archivo `sql/bricoacademy.sql` para crear las tablas y datos iniciales.
+
+### Paso 3: Ejecutar la API Node.js
+
+En la carpeta `bricoacademy-backend/`, ejecuta:
+
+```bash
+npm install
+npm start
+```
+
+La API conectará automáticamente a MySQL usando las credenciales de `config/config.js` (host: `localhost`, puerto: `3306`). Ahora puedes probar los endpoints desde http://localhost:3000/api/courses o usando los archivos `.rest` en la carpeta `request/`.
+
+**Para detener todo:** `docker-compose stop` (en `docker-lamp/`)
