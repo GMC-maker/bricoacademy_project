@@ -34,10 +34,14 @@ class TeacherController {
 			});
 		} catch (err) {
 			logMensaje("Error en createTeacher:", err);
-			return res.status(500).json({
+
+			return res.status(400).json({
 				ok: false,
 				datos: null,
-				mensaje: "Error al registrar un profesor",
+				mensaje:
+					err?.original?.sqlMessage ||
+					err?.parent?.sqlMessage ||
+					"Error al registrar un profesor",
 			});
 		}
 	}
