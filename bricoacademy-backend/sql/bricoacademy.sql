@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: db
--- Tiempo de generación: 27-01-2026 a las 12:50:40
+-- Tiempo de generación: 31-01-2026 a las 22:21:14
 -- Versión del servidor: 8.0.43
 -- Versión de PHP: 8.3.26
 
@@ -44,7 +44,7 @@ CREATE TABLE `course` (
 --
 
 INSERT INTO `course` (`id_course`, `id_teacher`, `name`, `description`, `online`, `start_date`, `duration`, `price`, `image_url`) VALUES
-(1, 1, 'Macramé básico', 'Nudos esenciales y creación de colgantes.', 0, '2026-02-01', 30, 45.00, 'https://picsum.photos/seed/course1/400/250'),
+(1, 1, 'Macramé básico', 'Nudos esenciales y creación de colgantes.', 0, '2026-02-01', 80, 45.00, 'https://picsum.photos/seed/course1/400/250'),
 (2, 1, 'Restauración de muebles', 'Lijado, imprimación y acabado.', 0, '2026-02-15', 40, 60.00, 'https://picsum.photos/seed/course2/400/250'),
 (3, 2, 'Cerámica creativa', 'Técnicas básicas con arcilla y esmaltes.', 1, '2026-03-05', 25, 50.00, 'https://picsum.photos/seed/course3/400/250'),
 (4, 2, 'Costura para principiantes', 'Uso de máquina y patrones simples.', 0, '2026-03-20', 35, 55.00, 'https://picsum.photos/seed/course4/400/250'),
@@ -52,7 +52,8 @@ INSERT INTO `course` (`id_course`, `id_teacher`, `name`, `description`, `online`
 (6, 3, 'Introducción al bricolaje', 'Bricolaje para mayores, principantes.', 1, '2026-05-01', 10, 15.00, NULL),
 (7, 1, 'Velas artesanales', 'Mezclas, fragancias y moldes.', 1, '2026-04-01', 15, 25.00, 'https://picsum.photos/seed/course6/400/250'),
 (8, NULL, 'Curso Fontanería Básica', 'Introducción a fontanería', 0, '2026-03-01', 150, 150.00, NULL),
-(11, NULL, 'Curso Fontanería Básica', 'Introducción a fontanería', 0, '2026-03-01', 30, 150.00, 'null');
+(11, NULL, 'Curso Fontanería Básica', 'Introducción a fontanería', 0, '2026-03-01', 30, 150.00, 'null'),
+(13, 3, 'Prueba de Curso Nuevo', 'Aqui vamos a ser muy creativos', 0, '2026-01-08', 100, 50.00, 'https://picsum.photos/seed/course1/400/250');
 
 -- --------------------------------------------------------
 
@@ -78,11 +79,12 @@ CREATE TABLE `teacher` (
 --
 
 INSERT INTO `teacher` (`id_teacher`, `dni`, `fullname`, `email`, `active`, `status`, `teaching_hours`, `hourly_rate`, `hire_date`, `image_url`) VALUES
-(1, '12345678A', 'Ana Romero', 'ana@bricoacademy.com', 1, 'ALTA', 18, 20.00, '2025-09-01', 'https://picsum.photos/seed/teacher1/300/300'),
+(1, '55566688A', 'Ana Romero', 'ana@bricoacademy.com', 1, 'ALTA', 8, 20.00, '2025-09-01', 'https://picsum.photos/seed/teacher1/300/300'),
 (2, '23456789B', 'Carlos Vega', 'carlos@bricoacademy.com', 1, 'PERMISO', 8, 18.50, '2025-10-15', 'https://picsum.photos/seed/teacher2/300/300'),
-(3, '34567890C', 'Lucía Marín', 'lucia@bricoacademy.com', 0, 'BAJA', 0, 22.00, '2024-02-10', 'https://picsum.photos/seed/teacher3/300/300'),
+(3, '34567890C', 'Lucía Marín', 'lucia@bricoacademy.com', 0, 'BAJA', 36, 22.00, '2024-02-10', 'https://picsum.photos/seed/teacher3/300/300'),
 (4, '88888888Y', 'Profesor Actualizado', 'powershell@correo.com', 1, 'ALTA', 12, 22.00, '2026-02-06', 'https://picsum.photos/seed/ps/300/300'),
-(7, '77777777X', 'POST AISLADO', 'aislado@correo.com', 1, 'ALTA', 5, 30.00, '2026-02-03', 'https://picsum.photos/seed/postteacher/300/300');
+(7, '77777777X', 'POST AISLADO', 'aislado@correo.com', 0, 'BAJA', 5, 30.00, '2026-02-03', 'https://picsum.photos/seed/postteacher/300/300'),
+(10, '11223344X', 'Ana Moreno Ruiz', 'ana.ruiz@email.com', 1, 'ALTA', 10, 8.00, '2026-01-02', '');
 
 --
 -- Índices para tablas volcadas
@@ -111,13 +113,13 @@ ALTER TABLE `teacher`
 -- AUTO_INCREMENT de la tabla `course`
 --
 ALTER TABLE `course`
-  MODIFY `id_course` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id_course` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de la tabla `teacher`
 --
 ALTER TABLE `teacher`
-  MODIFY `id_teacher` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_teacher` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- Restricciones para tablas volcadas
