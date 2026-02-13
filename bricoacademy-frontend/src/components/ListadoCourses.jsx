@@ -37,7 +37,7 @@ export default function ListadoCourses() {
 
 	async function handleDelete(id_course) {
 		if (!window.confirm("¿Seguro que quieres borrar este curso?")) return;
-		
+
 		try {
 			await api.delete("/courses/" + id_course);
 			const datos_nuevos = datos.filter((c) => c.id_course !== id_course);
@@ -70,76 +70,95 @@ export default function ListadoCourses() {
 			<Typography variant='h4' align='center' sx={{ my: 3 }}>
 				Listado de cursos
 			</Typography>
+			<Stack
+				className='no-print'
+				direction='row'
+				spacing={2}
+				justifyContent='center'
+				sx={{ mb: 2 }}>
+				<Button variant='outlined' onClick={() => window.print()}>
+					Imprimir
+				</Button>
+			</Stack>
 
-			<TableContainer component={Paper}>
-				<Table stickyHeader aria-label='courses table'>
-					<TableHead>
-						<TableRow>
-							<TableCell>Nombre</TableCell>
-							<TableCell align='center'>Online</TableCell>
-							<TableCell align='center'>Inicio</TableCell>
-							<TableCell align='center'>Duración</TableCell>
-							<TableCell align='center'>Precio</TableCell>
-							<TableCell>Imagen</TableCell>
-							<TableCell align='center'>Acciones</TableCell>
-						</TableRow>
-					</TableHead>
-
-					<TableBody>
-						{datos.map((row) => (
-							<TableRow key={row.id_course}>
-								<TableCell>{row.name}</TableCell>
-								<TableCell align='center'>
-									{row.online ? "Sí" : "No"}
-								</TableCell>
-								<TableCell align='center'>
-									{row.start_date}
-								</TableCell>
-								<TableCell align='center'>
-									{row.duration} h
-								</TableCell>
-								<TableCell align='center'>
-									{row.price} €
-								</TableCell>
-								<TableCell>
-									<Avatar
-										alt={row.name}
-										src={row.image_url}
-									/>
-								</TableCell>
-								<TableCell align='center'>
-									<Stack
-										direction={{ xs: "column", sm: "row" }}
-										spacing={1}
-										justifyContent='center'
-										alignItems='center'>
-										<Button
-											variant='contained'
-											color='error'
-											onClick={() =>
-												handleDelete(row.id_course)
-											}>
-											<DeleteIcon />
-										</Button>
-
-										<Button
-											variant='contained'
-											color='primary'
-											onClick={() =>
-												navigate(
-													"/courses/edit/" +
-														row.id_course,
-												)
-											}>
-											<EditIcon />
-										</Button>
-									</Stack>
+			<div className='print-area'>
+				<TableContainer component={Paper}>
+					<Table stickyHeader aria-label='courses table'>
+						<TableHead>
+							<TableRow>
+								<TableCell>Nombre</TableCell>
+								<TableCell align='center'>Online</TableCell>
+								<TableCell align='center'>Inicio</TableCell>
+								<TableCell align='center'>Duración</TableCell>
+								<TableCell align='center'>Precio</TableCell>
+								<TableCell>Imagen</TableCell>
+								<TableCell align='center' className='no-print'>
+									Acciones
 								</TableCell>
 							</TableRow>
-						))}
-					</TableBody>
-				</Table>
-			</TableContainer>
+						</TableHead>
+
+						<TableBody>
+							{datos.map((row) => (
+								<TableRow key={row.id_course}>
+									<TableCell>{row.name}</TableCell>
+									<TableCell align='center'>
+										{row.online ? "Sí" : "No"}
+									</TableCell>
+									<TableCell align='center'>
+										{row.start_date}
+									</TableCell>
+									<TableCell align='center'>
+										{row.duration} h
+									</TableCell>
+									<TableCell align='center'>
+										{row.price} €
+									</TableCell>
+									<TableCell>
+										<Avatar
+											alt={row.name}
+											src={row.image_url}
+										/>
+									</TableCell>
+									<TableCell
+										align='center'
+										className='no-print'>
+										<Stack
+											direction={{
+												xs: "column",
+												sm: "row",
+											}}
+											spacing={1}
+											justifyContent='center'
+											alignItems='center'>
+											<Button
+												variant='contained'
+												color='error'
+												onClick={() =>
+													handleDelete(row.id_course)
+												}>
+												<DeleteIcon />
+											</Button>
+
+											<Button
+												variant='contained'
+												color='primary'
+												onClick={() =>
+													navigate(
+														"/courses/edit/" +
+															row.id_course,
+													)
+												}>
+												<EditIcon />
+											</Button>
+										</Stack>
+									</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
+				</TableContainer>
+			</div>
 		</>
 	);
 }

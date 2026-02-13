@@ -7,6 +7,7 @@ const { logMensaje } = require("./utils/logger.js");
 // Rutas de la API
 const teachersRoutes = require("./routes/teacherRoutes");
 const coursesRoutes = require("./routes/courseRoutes");
+const statsRoutes = require("./routes/statsRoutes");
 
 // INICIALIZACIÓN
 const app = express();
@@ -31,6 +32,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/teachers", teachersRoutes);
 app.use("/api/courses", coursesRoutes);
+app.use("/api/stats", statsRoutes);
 
 // RUTAS - SPA (Catch-all)
 

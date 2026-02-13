@@ -34,11 +34,12 @@ export default function Teachers() {
 		fetchTeachers();
 	}, []);
 
-	//para borrar los registros: 
+	//para borrar los registros:
 	async function handleDelete(id_teacher) {
-		//mensaje de seguridad si quiero borrar: 
-		if (!window.confirm("¿Seguro que quieres borrar este profesor?")) return;
-		
+		//mensaje de seguridad si quiero borrar:
+		if (!window.confirm("¿Seguro que quieres borrar este profesor?"))
+			return;
+
 		try {
 			await api.delete("/teachers/" + id_teacher);
 			const datos_nuevos = datos.filter(
@@ -73,72 +74,97 @@ export default function Teachers() {
 			<Typography variant='h4' align='center' sx={{ my: 3 }}>
 				Listado de profesores
 			</Typography>
+			<Stack
+				className='no-print'
+				direction='row'
+				spacing={2}
+				justifyContent='end'
+				sx={{ mb: 2 }}>
+				<Button variant='outlined' onClick={() => window.print()}>
+					Imprimir
+				</Button>
+			</Stack>
 
-			<TableContainer component={Paper}>
-				<Table stickyHeader aria-label='teachers table'>
-					<TableHead>
-						<TableRow>
-							<TableCell>Nombre</TableCell>
-							<TableCell>DNI</TableCell>
-							<TableCell>Email</TableCell>
-							<TableCell align='center'>Estado</TableCell>
-							<TableCell align='center'>Activo</TableCell>
-							<TableCell>Foto</TableCell>
-							<TableCell align='center'>Acciones</TableCell>
-						</TableRow>
-					</TableHead>
+			<div className='print-area'>
+				<TableContainer component={Paper}>
+					<TableContainer component={Paper}>
+						<Table stickyHeader aria-label='teachers table'>
+							<TableHead>
+								<TableRow>
+									<TableCell>Nombre</TableCell>
+									<TableCell>DNI</TableCell>
+									<TableCell>Email</TableCell>
+									<TableCell align='center'>Estado</TableCell>
+									<TableCell align='center'>Activo</TableCell>
+									<TableCell>Foto</TableCell>
+									<TableCell
+										align='center'
+										className='no-print'>
+										Acciones
+									</TableCell>
+								</TableRow>
+							</TableHead>
 
-					<TableBody>
-						{datos.map((row) => (
-							<TableRow key={row.id_teacher}>
-								<TableCell>{row.fullname}</TableCell>
-								<TableCell>{row.dni}</TableCell>
-								<TableCell>{row.email}</TableCell>
-								<TableCell align='center'>
-									{row.status}
-								</TableCell>
-								<TableCell align='center'>
-									{row.active ? "Sí" : "No"}
-								</TableCell>
-								<TableCell>
-									<Avatar
-										alt={row.fullname}
-										src={row.image_url}
-									/>
-								</TableCell>
-								<TableCell align='center'>
-									<Stack
-										direction={{ xs: "column", sm: "row" }}
-										spacing={1}
-										justifyContent='center'
-										alignItems='center'>
-										<Button
-											variant='contained'
-											color='error'
-											onClick={() =>
-												handleDelete(row.id_teacher)
-											}>
-											<DeleteIcon />
-										</Button>
+							<TableBody>
+								{datos.map((row) => (
+									<TableRow key={row.id_teacher}>
+										<TableCell>{row.fullname}</TableCell>
+										<TableCell>{row.dni}</TableCell>
+										<TableCell>{row.email}</TableCell>
+										<TableCell align='center'>
+											{row.status}
+										</TableCell>
+										<TableCell align='center'>
+											{row.active ? "Sí" : "No"}
+										</TableCell>
+										<TableCell>
+											<Avatar
+												alt={row.fullname}
+												src={row.image_url}
+											/>
+										</TableCell>
+										<TableCell
+											align='center'
+											className='no-print'>
+											<Stack
+												direction={{
+													xs: "column",
+													sm: "row",
+												}}
+												spacing={1}
+												justifyContent='center'
+												alignItems='center'>
+												<Button
+													variant='contained'
+													color='error'
+													onClick={() =>
+														handleDelete(
+															row.id_teacher,
+														)
+													}>
+													<DeleteIcon />
+												</Button>
 
-										<Button
-											variant='contained'
-											color='primary'
-											onClick={() =>
-												navigate(
-													"/teachers/edit/" +
-														row.id_teacher,
-												)
-											}>
-											<EditIcon />
-										</Button>
-									</Stack>
-								</TableCell>
-							</TableRow>
-						))}
-					</TableBody>
-				</Table>
-			</TableContainer>
+												<Button
+													variant='contained'
+													color='primary'
+													onClick={() =>
+														navigate(
+															"/teachers/edit/" +
+																row.id_teacher,
+														)
+													}>
+													<EditIcon />
+												</Button>
+											</Stack>
+										</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
+					</TableContainer>
+				</TableContainer>
+			</div>
 		</>
 	);
 }

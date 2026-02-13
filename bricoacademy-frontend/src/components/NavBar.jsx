@@ -31,6 +31,8 @@ const courseMenu = [
 	{ id: "c_list", label: "Listado de cursos", path: "/courses" },
 	{ id: "c_new", label: "Alta de curso", path: "/courses/new" },
 	{ id: "c_filter", label: "Cursos por fechas", path: "/courses/filter" },
+	{ id: "c_chart", label: "Gráfica cursos por profesor", path: "/stats/courses-per-teacher" },
+
 ];
 
 export default function NavBar() {

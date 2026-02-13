@@ -12,6 +12,8 @@ import AltaTeacher from "./components/AltaTeacher";
 import EditarTeacher from "./components/EditarTeacher";
 import AltaCourse from "./components/AltaCourse";
 import EditarCourse from "./components/EditarCourse";
+import CoursesPerTeacherChart from "./components/CoursesPerTeacherChart";
+
 
 const router = createBrowserRouter([
 	{
@@ -28,6 +30,8 @@ const router = createBrowserRouter([
 			{ path: "teachers/edit/:id_teacher", Component: EditarTeacher },
 			{ path: "courses/new", Component: AltaCourse },
 			{ path: "courses/edit/:id_course", Component: EditarCourse },
+			{ path: "stats/courses-per-teacher", Component: CoursesPerTeacherChart },
+
 		],
 	},
 ]);
