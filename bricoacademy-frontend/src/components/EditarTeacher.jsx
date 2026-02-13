@@ -1,3 +1,7 @@
+/**
+ * @module components/EditarTeacher
+ * @description Formulario para editar la información de un profesor.
+ */
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -22,6 +26,18 @@ import "dayjs/locale/es";
 
 import api from "../api";
 
+/**
+ * Componente `EditarTeacher`.
+ *
+ * Edita la información de un profesor existente identificado por `id_teacher`.
+ * - Carga el profesor por id y muestra un formulario similar al de alta.
+ * - Observa `isUpdating` para enviar `PUT /teachers/:id` con los cambios.
+ *
+ * Handlers importantes:
+ * - `fetchTeacher()`: carga los datos iniciales del profesor.
+ * - `handleChange(e)`: actualiza el estado `teacher` (convierte numéricos).
+ * - `validarDatos()`: valida todos los campos antes de enviar.
+ */
 export default function EditarTeacher() {
 	const navigate = useNavigate();
 	const { id_teacher } = useParams();
@@ -54,6 +70,10 @@ export default function EditarTeacher() {
 	const [dialogMessage, setDialogMessage] = useState("");
 	const [dialogSeverity, setDialogSeverity] = useState("success");
 
+	/**
+	 * Efecto que recupera los datos del profesor por id.
+	 * En caso de error muestra un diálogo con el mensaje de fallo.
+	 */
 	useEffect(() => {
 		async function fetchTeacher() {
 			try {
@@ -70,6 +90,10 @@ export default function EditarTeacher() {
 		fetchTeacher();
 	}, [id_teacher]);
 
+	/**
+	 * Efecto que observa `isUpdating` y realiza la petición de actualización
+	 * `PUT /teachers/:id` cuando se pide guardar los cambios.
+	 */
 	useEffect(() => {
 		async function fetchUpdateTeacher() {
 			try {

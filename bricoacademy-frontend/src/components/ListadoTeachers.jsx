@@ -1,3 +1,8 @@
+/**
+ * @module components/ListadoTeachers
+ * @description Tabla que muestra el listado completo de profesores.
+ */
+
 import { useState, useEffect } from "react";
 import api from "../api";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +20,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { Stack } from "@mui/material";
 
+/**
+ * Componente `ListadoTeachers`.
+ *
+ * Recupera y muestra la lista completa de profesores. Permite imprimir y
+ * eliminar registros mediante la API (`GET /teachers/`, `DELETE /teachers/:id`).
+ */
 export default function Teachers() {
 	const [datos, setDatos] = useState([]);
 	const [error, setError] = useState(null);
@@ -34,7 +45,11 @@ export default function Teachers() {
 		fetchTeachers();
 	}, []);
 
-	//para borrar los registros:
+	/**
+	 * handleDelete - elimina un profesor tras confirmación del usuario.
+	 * Actualiza el estado local para eliminar la fila si la petición tiene éxito.
+	 * @param {number|string} id_teacher Identificador del profesor
+	 */
 	async function handleDelete(id_teacher) {
 		//mensaje de seguridad si quiero borrar:
 		if (!window.confirm("¿Seguro que quieres borrar este profesor?"))

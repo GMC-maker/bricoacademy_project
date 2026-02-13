@@ -13,7 +13,6 @@ services:
         volumes:
             - persistent:/var/lib/mysql
             - ./dump:/docker-entrypoint-initdb.d:ro
-
     phpmyadmin:
         image: phpmyadmin/phpmyadmin:latest
         restart: unless-stopped
@@ -25,11 +24,13 @@ services:
             - "${PHPMYADMIN_PORT}:80"
         depends_on:
             - db
-
     www-node-express:
         build: .
         ports:
             - "${EXPRESS_PORT}:3000"
+        volumes: 
+            - .:/app # QUITAR EN PRODUCCIÓN REAL 
+            - /app/node_modules
         depends_on:
             - db
         environment:

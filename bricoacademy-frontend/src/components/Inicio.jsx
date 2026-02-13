@@ -1,3 +1,8 @@
+/**
+ * @module components/Inicio
+ * @description Componente de inicio con contenido principal o presentación.
+ */
+
 import { useState } from "react";
 import { Box, Typography, IconButton } from "@mui/material";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
@@ -9,6 +14,17 @@ import carpinteria from "../assets/carousel/carpinteria.jpg";
 import pottery from "../assets/carousel/pottery.jpg";
 import { Link } from "react-router-dom";
 
+/**
+ * Componente `Inicio`.
+ *
+ * Presenta un carrusel sencillo de imágenes con flechas para navegar.
+ * - `slides`: array de objetos con `label` e `img`.
+ * - `activeStep`: estado que indica la diapositiva activa.
+ *
+ * Handlers:
+ * - `handleNext()`: avanza a la siguiente diapositiva (loop).
+ * - `handleBack()`: retrocede a la anterior (loop).
+ */
 export default function Inicio() {
 	const slides = [
 		{

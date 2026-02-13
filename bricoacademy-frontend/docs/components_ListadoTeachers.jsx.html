@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/ListadoTeachers.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/ListadoTeachers.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module components/ListadoTeachers
+ * @description Tabla que muestra el listado completo de profesores.
+ */
+
+import { useState, useEffect } from "react";
+import api from "../api";
+import { useNavigate } from "react-router-dom";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import Avatar from "@mui/material/Avatar";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import { Stack } from "@mui/material";
+
+/**
+ * Componente `ListadoTeachers`.
+ *
+ * Recupera y muestra la lista completa de profesores. Permite imprimir y
+ * eliminar registros mediante la API (`GET /teachers/`, `DELETE /teachers/:id`).
+ */
+export default function Teachers() {
+	const [datos, setDatos] = useState([]);
+	const [error, setError] = useState(null);
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		async function fetchTeachers() {
+			try {
+				const respuesta = await api.get("/teachers/");
+				setDatos(respuesta.datos);
+				setError(null);
+			} catch (error) {
+				setError(error.mensaje || "Error al cargar profesores");
+				setDatos([]);
+			}
+		}
+		fetchTeachers();
+	}, []);
+
+	/**
+	 * handleDelete - elimina un profesor tras confirmación del usuario.
+	 * Actualiza el estado local para eliminar la fila si la petición tiene éxito.
+	 * @param {number|string} id_teacher Identificador del profesor
+	 */
+	async function handleDelete(id_teacher) {
+		//mensaje de seguridad si quiero borrar:
+		if (!window.confirm("¿Seguro que quieres borrar este profesor?"))
+			return;
+
+		try {
+			await api.delete("/teachers/" + id_teacher);
+			const datos_nuevos = datos.filter(
+				(t) => t.id_teacher !== id_teacher,
+			);
+			setDatos(datos_nuevos);
+			setError(null);
+		} catch (error) {
+			setError(error.mensaje || "No se pudo conectar al servidor");
+			setDatos([]);
+		}
+	}
+
+	if (error != null) {
+		return (
+			&lt;Typography variant='h5' align='center' sx={{ mt: 3 }}>
+				{error}
+			&lt;/Typography>
+		);
+	}
+
+	if (!datos || datos.length === 0) {
+		return (
+			&lt;Typography variant='h5' align='center' sx={{ mt: 3 }}>
+				No hay profesores disponibles
+			&lt;/Typography>
+		);
+	}
+
+	return (
+		&lt;>
+			&lt;Typography variant='h4' align='center' sx={{ my: 3 }}>
+				Listado de profesores
+			&lt;/Typography>
+			&lt;Stack
+				className='no-print'
+				direction='row'
+				spacing={2}
+				justifyContent='end'
+				sx={{ mb: 2 }}>
+				&lt;Button variant='outlined' onClick={() => window.print()}>
+					Imprimir
+				&lt;/Button>
+			&lt;/Stack>
+
+			&lt;div className='print-area'>
+				&lt;TableContainer component={Paper}>
+					&lt;TableContainer component={Paper}>
+						&lt;Table stickyHeader aria-label='teachers table'>
+							&lt;TableHead>
+								&lt;TableRow>
+									&lt;TableCell>Nombre&lt;/TableCell>
+									&lt;TableCell>DNI&lt;/TableCell>
+									&lt;TableCell>Email&lt;/TableCell>
+									&lt;TableCell align='center'>Estado&lt;/TableCell>
+									&lt;TableCell align='center'>Activo&lt;/TableCell>
+									&lt;TableCell>Foto&lt;/TableCell>
+									&lt;TableCell
+										align='center'
+										className='no-print'>
+										Acciones
+									&lt;/TableCell>
+								&lt;/TableRow>
+							&lt;/TableHead>
+
+							&lt;TableBody>
+								{datos.map((row) => (
+									&lt;TableRow key={row.id_teacher}>
+										&lt;TableCell>{row.fullname}&lt;/TableCell>
+										&lt;TableCell>{row.dni}&lt;/TableCell>
+										&lt;TableCell>{row.email}&lt;/TableCell>
+										&lt;TableCell align='center'>
+											{row.status}
+										&lt;/TableCell>
+										&lt;TableCell align='center'>
+											{row.active ? "Sí" : "No"}
+										&lt;/TableCell>
+										&lt;TableCell>
+											&lt;Avatar
+												alt={row.fullname}
+												src={row.image_url}
+											/>
+										&lt;/TableCell>
+										&lt;TableCell
+											align='center'
+											className='no-print'>
+											&lt;Stack
+												direction={{
+													xs: "column",
+													sm: "row",
+												}}
+												spacing={1}
+												justifyContent='center'
+												alignItems='center'>
+												&lt;Button
+													variant='contained'
+													color='error'
+													onClick={() =>
+														handleDelete(
+															row.id_teacher,
+														)
+													}>
+													&lt;DeleteIcon />
+												&lt;/Button>
+
+												&lt;Button
+													variant='contained'
+													color='primary'
+													onClick={() =>
+														navigate(
+															"/teachers/edit/" +
+																row.id_teacher,
+														)
+													}>
+													&lt;EditIcon />
+												&lt;/Button>
+											&lt;/Stack>
+										&lt;/TableCell>
+									&lt;/TableRow>
+								))}
+							&lt;/TableBody>
+						&lt;/Table>
+					&lt;/TableContainer>
+				&lt;/TableContainer>
+			&lt;/div>
+		&lt;/>
+	);
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-components_AltaCourse.html">components/AltaCourse</a></li><li><a href="module-components_AltaTeacher.html">components/AltaTeacher</a></li><li><a href="module-components_CoursesPerTeacherChart.html">components/CoursesPerTeacherChart</a></li><li><a href="module-components_EditarCourse.html">components/EditarCourse</a></li><li><a href="module-components_EditarTeacher.html">components/EditarTeacher</a></li><li><a href="module-components_Footer.html">components/Footer</a></li><li><a href="module-components_Inicio.html">components/Inicio</a></li><li><a href="module-components_ListadoCourses.html">components/ListadoCourses</a></li><li><a href="module-components_ListadoCoursesFiltro.html">components/ListadoCoursesFiltro</a></li><li><a href="module-components_ListadoTeachers.html">components/ListadoTeachers</a></li><li><a href="module-components_ListadoTeachersFiltro.html">components/ListadoTeachersFiltro</a></li><li><a href="module-components_NavBar.html">components/NavBar</a></li><li><a href="module-components_ScrollTopButton.html">components/ScrollTopButton</a></li><li><a href="module-pages_ErrorPage.html">pages/ErrorPage</a></li><li><a href="module-pages_Home.html">pages/Home</a></li></ul><h3>Global</h3><ul><li><a href="global.html#api">api</a></li><li><a href="global.html#router">router</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Feb 13 2026 20:19:56 GMT+0100 (hora estándar de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

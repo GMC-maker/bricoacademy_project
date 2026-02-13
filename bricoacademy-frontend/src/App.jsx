@@ -14,7 +14,10 @@ import AltaCourse from "./components/AltaCourse";
 import EditarCourse from "./components/EditarCourse";
 import CoursesPerTeacherChart from "./components/CoursesPerTeacherChart";
 
-
+/**
+ * Definición de rutas de la aplicación mediante `createBrowserRouter`.
+ * Cada ruta carga un componente principal o una página.
+ */
 const router = createBrowserRouter([
 	{
 		path: "/",
@@ -30,12 +33,18 @@ const router = createBrowserRouter([
 			{ path: "teachers/edit/:id_teacher", Component: EditarTeacher },
 			{ path: "courses/new", Component: AltaCourse },
 			{ path: "courses/edit/:id_course", Component: EditarCourse },
-			{ path: "stats/courses-per-teacher", Component: CoursesPerTeacherChart },
-
+			{
+				path: "stats/courses-per-teacher",
+				Component: CoursesPerTeacherChart,
+			},
 		],
 	},
 ]);
 
+/**
+ * Componente raíz `App` que inyecta el `RouterProvider` con la configuración
+ * de rutas definida en `router`.
+ */
 export default function App() {
 	return <RouterProvider router={router} />;
 }

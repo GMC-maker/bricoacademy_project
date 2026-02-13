@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/EditarCourse.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/EditarCourse.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module components/EditarCourse
+ * @description Formulario para modificar los datos de un curso existente.
+ */
+
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import MenuItem from "@mui/material/MenuItem";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import Alert from "@mui/material/Alert";
+
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+import "dayjs/locale/es";
+
+import api from "../api";
+
+/**
+ * Componente `EditarCourse`.
+ *
+ * Permite editar un curso existente identificado por `id_course`.
+ * - Carga los datos del curso y la lista de profesores para el select.
+ * - Observa `isUpdating` para realizar la petición `PUT` de actualización.
+ *
+ * Handlers principales:
+ * - `fetchCourse()` efecto: obtiene el curso por id y normaliza `id_teacher`.
+ * - `handleChange(e)`: actualiza el estado `course` (convierte numéricos y modalidad).
+ * - `handleClick()`: valida y dispara la actualización.
+ * - `validarDatos()`: validación local de campos.
+ */
+export default function EditarCourse() {
+	const navigate = useNavigate();
+	const { id_course } = useParams();
+
+	const [teachers, setTeachers] = useState([]);
+
+	const [course, setCourse] = useState({
+		id_teacher: "",
+		name: "",
+		description: "",
+		online: false,
+		start_date: "",
+		duration: 0,
+		price: 0,
+		image_url: "",
+	});
+
+	const [isCamposValidos, setIsCamposValidos] = useState({
+		name: true,
+		start_date: true,
+		duration: true,
+		price: true,
+		image_url: true,
+	});
+
+	const [isUpdating, setIsUpdating] = useState(false);
+	const [openDialog, setOpenDialog] = useState(false);
+	const [dialogMessage, setDialogMessage] = useState("");
+	const [dialogSeverity, setDialogSeverity] = useState("success");
+
+	/**
+	 * Efecto que carga la lista de profesores para el select.
+	 */
+	useEffect(() => {
+		async function fetchTeachers() {
+			try {
+				const r = await api.get("/teachers/");
+				setTeachers(r.datos || []);
+			} catch {
+				setTeachers([]);
+			}
+		}
+		fetchTeachers();
+	}, []);
+
+	/**
+	 * Efecto que carga los datos del curso actual (`/courses/:id`).
+	 * Normaliza `id_teacher` a string para que funcione correctamente en el select.
+	 */
+	useEffect(() => {
+		async function fetchCourse() {
+			try {
+				const r = await api.get(`/courses/${id_course}`);
+				// normalizo id_teacher a string para el select
+				setCourse({
+					...r.datos,
+					id_teacher: r.datos?.id_teacher
+						? String(r.datos.id_teacher)
+						: "",
+				});
+			} catch (error) {
+				setDialogMessage(
+					error.mensaje || "Error al recuperar el curso",
+				);
+				setDialogSeverity("error");
+				setOpenDialog(true);
+			}
+		}
+		fetchCourse();
+	}, [id_course]);
+
+	/**
+	 * Efecto que realiza la actualización cuando `isUpdating` es true.
+	 * Envía `PUT /courses/:id` con el payload normalizado.
+	 */
+	useEffect(() => {
+		async function fetchUpdateCourse() {
+			try {
+				const payload = {
+					...course,
+					id_teacher:
+						course.id_teacher === ""
+							? null
+							: Number(course.id_teacher),
+				};
+
+				await api.put(`/courses/${id_course}`, payload);
+
+				setDialogMessage("Actualización correcta del curso");
+				setDialogSeverity("success");
+				setOpenDialog(true);
+			} catch (error) {
+				setDialogMessage(
+					error.mensaje || "Error al actualizar el curso",
+				);
+				setDialogSeverity("error");
+				setOpenDialog(true);
+			}
+			setIsUpdating(false);
+		}
+
+		if (isUpdating) fetchUpdateCourse();
+	}, [isUpdating]);
+
+	function handleChange(e) {
+		const { name, value } = e.target;
+
+		if (name === "duration") {
+			setCourse({
+				...course,
+				duration: value === "" ? "" : Number(value),
+			});
+			return;
+		}
+		if (name === "price") {
+			setCourse({ ...course, price: value === "" ? "" : Number(value) });
+			return;
+		}
+		if (name === "online") {
+			setCourse({ ...course, online: value === "1" });
+			return;
+		}
+
+		setCourse({ ...course, [name]: value });
+	}
+
+	function handleClick() {
+		if (isUpdating) return;
+		if (validarDatos()) setIsUpdating(true);
+	}
+
+	function handleDialogClose() {
+		setOpenDialog(false);
+		if (dialogSeverity === "success") navigate("/courses");
+	}
+
+	function validarDatos() {
+		let valido = true;
+		const v = {
+			name: true,
+			start_date: true,
+			duration: true,
+			price: true,
+			image_url: true,
+		};
+
+		if (course.name.trim().length &lt; 3) {
+			valido = false;
+			v.name = false;
+		}
+
+		if (!course.start_date) {
+			valido = false;
+			v.start_date = false;
+		}
+
+		if (course.duration === "" || Number(course.duration) &lt; 0) {
+			valido = false;
+			v.duration = false;
+		}
+
+		if (course.price === "" || Number(course.price) &lt; 0) {
+			valido = false;
+			v.price = false;
+		}
+
+		if (course.image_url?.trim() &amp;&amp; !isValidURL(course.image_url.trim())) {
+			valido = false;
+			v.image_url = false;
+		}
+
+		setIsCamposValidos(v);
+		return valido;
+	}
+
+	const isValidURL = (urlString) => {
+		const patronURL = new RegExp(
+			"^(https?:\\/\\/)?" +
+				"((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" +
+				"((\\d{1,3}\\.){3}\\d{1,3}))" +
+				"(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" +
+				"(\\?[;&amp;a-z\\d%_.~+=-]*)?" +
+				"(\\#[-a-z\\d_]*)?$",
+			"i",
+		);
+		return !!patronURL.test(urlString);
+	};
+
+	return (
+		&lt;>
+			&lt;Grid
+				container
+				spacing={2}
+				sx={{ justifyContent: "center", alignItems: "center" }}>
+				&lt;Grid item xs={12} md={6}>
+					&lt;Paper
+						elevation={6}
+						sx={{ mt: 3, p: 3, maxWidth: 900, mx: "auto" }}>
+						&lt;Typography variant='h4' align='center' sx={{ mb: 3 }}>
+							Editar curso
+						&lt;/Typography>
+
+						&lt;Grid
+							container
+							spacing={2}
+							sx={{
+								justifyContent: "center",
+								alignItems: "center",
+							}}>
+							&lt;Grid item xs={12} md={6}>
+								&lt;TextField
+									required
+									fullWidth
+									label='Nombre'
+									name='name'
+									value={course.name || ""}
+									onChange={handleChange}
+									error={!isCamposValidos.name}
+									helperText={
+										!isCamposValidos.name &amp;&amp;
+										"Mínimo 3 caracteres"
+									}
+								/>
+							&lt;/Grid>
+
+							&lt;Grid item xs={12} md={4}>
+								&lt;TextField
+									fullWidth
+									label='Descripción (opcional)'
+									name='description'
+									value={course.description || ""}
+									onChange={handleChange}
+									multiline
+									minRows={3}
+								/>
+							&lt;/Grid>
+
+							&lt;Grid item xs={4} md={4}>
+								&lt;TextField
+									select
+									fullWidth
+									label='Profesor (opcional)'
+									name='id_teacher'
+									value={course.id_teacher ?? ""}
+									onChange={handleChange}>
+									&lt;MenuItem value=''>
+										&lt;em>Sin asignar&lt;/em>
+									&lt;/MenuItem>
+									{teachers.map((t) => (
+										&lt;MenuItem
+											key={t.id_teacher}
+											value={String(t.id_teacher)}>
+											{t.fullname}
+										&lt;/MenuItem>
+									))}
+								&lt;/TextField>
+							&lt;/Grid>
+
+							&lt;Grid item xs={12} md={4}>
+								&lt;TextField
+									select
+									required
+									fullWidth
+									label='Modalidad'
+									name='online'
+									value={course.online ? "1" : "0"}
+									onChange={handleChange}>
+									&lt;MenuItem value='1'>Online&lt;/MenuItem>
+									&lt;MenuItem value='0'>Presencial&lt;/MenuItem>
+								&lt;/TextField>
+							&lt;/Grid>
+
+							&lt;Grid item xs={12} md={4}>
+								&lt;LocalizationProvider
+									dateAdapter={AdapterDayjs}
+									adapterLocale='es'>
+									&lt;DatePicker
+										label='Fecha de inicio'
+										minDate={dayjs("2020-01-01")}
+										slotProps={{
+											textField: {
+												required: true,
+												fullWidth: true,
+												error: !isCamposValidos.start_date,
+												helperText:
+													!isCamposValidos.start_date
+														? "La fecha es obligatoria"
+														: "",
+											},
+										}}
+										value={
+											course.start_date
+												? dayjs(course.start_date)
+												: null
+										}
+										onChange={(newValue) =>
+											setCourse({
+												...course,
+												start_date: newValue
+													? newValue.format(
+															"YYYY-MM-DD",
+														)
+													: "",
+											})
+										}
+									/>
+								&lt;/LocalizationProvider>
+							&lt;/Grid>
+
+							&lt;Grid item xs={12} md={6}>
+								&lt;TextField
+									required
+									fullWidth
+									label='Duración (horas)'
+									name='duration'
+									type='number'
+									value={course.duration ?? 0}
+									onChange={handleChange}
+									error={!isCamposValidos.duration}
+									helperText={
+										!isCamposValidos.duration &amp;&amp;
+										"No puede ser negativo"
+									}
+									inputProps={{ min: 0 }}
+								/>
+							&lt;/Grid>
+
+							&lt;Grid item xs={12} md={4}>
+								&lt;TextField
+									required
+									fullWidth
+									label='Precio (€)'
+									name='price'
+									type='number'
+									value={course.price ?? 0}
+									onChange={handleChange}
+									error={!isCamposValidos.price}
+									helperText={
+										!isCamposValidos.price &amp;&amp;
+										"No puede ser negativo"
+									}
+									inputProps={{ min: 0, step: "0.01" }}
+								/>
+							&lt;/Grid>
+
+							&lt;Grid item xs={12} md={4}>
+								&lt;TextField
+									fullWidth
+									label='URL Imagen (opcional)'
+									name='image_url'
+									value={course.image_url || ""}
+									onChange={handleChange}
+									error={!isCamposValidos.image_url}
+									helperText={
+										!isCamposValidos.image_url &amp;&amp;
+										"URL no válida"
+									}
+								/>
+							&lt;/Grid>
+
+							&lt;Grid
+								item
+								xs={12}
+								sx={{
+									display: "flex",
+									gap: 2,
+									justifyContent: "center",
+									mt: 1,
+								}}>
+								&lt;Button
+									variant='contained'
+									color='secondary'
+									onClick={() => navigate("/courses")}>
+									Cancelar
+								&lt;/Button>
+								&lt;Button
+									variant='contained'
+									color='primary'
+									onClick={handleClick}>
+									Guardar cambios
+								&lt;/Button>
+							&lt;/Grid>
+						&lt;/Grid>
+					&lt;/Paper>
+				&lt;/Grid>
+			&lt;/Grid>
+
+			&lt;Dialog open={openDialog} onClose={handleDialogClose}>
+				&lt;DialogTitle>Resultado&lt;/DialogTitle>
+				&lt;DialogContent>
+					&lt;Alert severity={dialogSeverity}>{dialogMessage}&lt;/Alert>
+				&lt;/DialogContent>
+				&lt;DialogActions>
+					&lt;Button onClick={handleDialogClose}>Aceptar&lt;/Button>
+				&lt;/DialogActions>
+			&lt;/Dialog>
+		&lt;/>
+	);
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-components_AltaCourse.html">components/AltaCourse</a></li><li><a href="module-components_AltaTeacher.html">components/AltaTeacher</a></li><li><a href="module-components_CoursesPerTeacherChart.html">components/CoursesPerTeacherChart</a></li><li><a href="module-components_EditarCourse.html">components/EditarCourse</a></li><li><a href="module-components_EditarTeacher.html">components/EditarTeacher</a></li><li><a href="module-components_Footer.html">components/Footer</a></li><li><a href="module-components_Inicio.html">components/Inicio</a></li><li><a href="module-components_ListadoCourses.html">components/ListadoCourses</a></li><li><a href="module-components_ListadoCoursesFiltro.html">components/ListadoCoursesFiltro</a></li><li><a href="module-components_ListadoTeachers.html">components/ListadoTeachers</a></li><li><a href="module-components_ListadoTeachersFiltro.html">components/ListadoTeachersFiltro</a></li><li><a href="module-components_NavBar.html">components/NavBar</a></li><li><a href="module-components_ScrollTopButton.html">components/ScrollTopButton</a></li><li><a href="module-pages_ErrorPage.html">pages/ErrorPage</a></li><li><a href="module-pages_Home.html">pages/Home</a></li></ul><h3>Global</h3><ul><li><a href="global.html#api">api</a></li><li><a href="global.html#router">router</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Feb 13 2026 20:19:56 GMT+0100 (hora estándar de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

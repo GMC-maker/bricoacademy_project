@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Global</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Global</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2></h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="api"><span class="type-signature">(constant) </span>api<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Instancia configurada de Axios para comunicación con el backendBase URL: http://localhost:3000/apiContent-Type: application/json
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="api.js.html">api.js</a>, <a href="api.js.html#line8">line 8</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="router"><span class="type-signature">(constant) </span>router<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Definición de rutas de la aplicación mediante `createBrowserRouter`.
+Cada ruta carga un componente principal o una página.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="App.jsx.html">App.jsx</a>, <a href="App.jsx.html#line21">line 21</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="module:components/AltaCourse"><span class="type-signature"></span>module:components/AltaCourse<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Componente `AltaCourse`.Formulario para crear un nuevo curso. Maneja el estado del formulario,carga una lista opcional de profesores para el select y realiza la petición`POST /courses/` cuando el usuario confirma.Funciones/handlers principales:- `useEffect` (carga de `teachers`): obtiene la lista de profesores para el select.- `useEffect` (creación): observa `isUpdating` y realiza la petición de creación.- `handleChange(e)`: actualiza el estado `course` según los inputs (convierte numéricos).- `handleClick()`: valida y dispara la creación.- `validarDatos()`: valida los campos del formulario.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_AltaCourse.jsx.html">components/AltaCourse.jsx</a>, <a href="components_AltaCourse.jsx.html#line45">line 45</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="module:components/AltaTeacher"><span class="type-signature"></span>module:components/AltaTeacher<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Componente `AltaTeacher`.Formulario para dar de alta a un profesor. Gestiona el estado local del formularioy realiza la petición `POST` a `/teachers/` cuando el usuario confirma.Estado principal (`teacher`):- `dni` (string)- `fullname` (string)- `email` (string)- `teaching_hours` (number)- `hourly_rate` (number)- `hire_date` (string, formato YYYY-MM-DD)- `image_url` (string)
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_AltaTeacher.jsx.html">components/AltaTeacher.jsx</a>, <a href="components_AltaTeacher.jsx.html#line43">line 43</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="module:components/CoursesPerTeacherChart"><span class="type-signature"></span>module:components/CoursesPerTeacherChart<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Componente `CoursesPerTeacherChart`.Muestra una gráfica de barras con el número de cursos por profesor.- Realiza una petición a la API en el endpoint `/stats/courses-per-teacher`.- Usa `recharts` para dibujar la gráfica.- Permite exportar la sección visible como PDF mediante `html2canvas` y `jspdf`.Estado local:- `data`: array con los datos que alimentan la gráfica (cada elemento: { profesor, totalCursos, ... }).- `loading`: booleano que indica si se están cargando los datos.- `error`: mensaje de error en caso de fallo de la llamada.Referencias:- `chartRef`: referencia al contenedor que se captura para el PDF.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_CoursesPerTeacherChart.jsx.html">components/CoursesPerTeacherChart.jsx</a>, <a href="components_CoursesPerTeacherChart.jsx.html#line41">line 41</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="module:components/EditarCourse"><span class="type-signature"></span>module:components/EditarCourse<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Componente `EditarCourse`.Permite editar un curso existente identificado por `id_course`.- Carga los datos del curso y la lista de profesores para el select.- Observa `isUpdating` para realizar la petición `PUT` de actualización.Handlers principales:- `fetchCourse()` efecto: obtiene el curso por id y normaliza `id_teacher`.- `handleChange(e)`: actualiza el estado `course` (convierte numéricos y modalidad).- `handleClick()`: valida y dispara la actualización.- `validarDatos()`: validación local de campos.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_EditarCourse.jsx.html">components/EditarCourse.jsx</a>, <a href="components_EditarCourse.jsx.html#line43">line 43</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="module:components/EditarTeacher"><span class="type-signature"></span>module:components/EditarTeacher<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Componente `EditarTeacher`.Edita la información de un profesor existente identificado por `id_teacher`.- Carga el profesor por id y muestra un formulario similar al de alta.- Observa `isUpdating` para enviar `PUT /teachers/:id` con los cambios.Handlers importantes:- `fetchTeacher()`: carga los datos iniciales del profesor.- `handleChange(e)`: actualiza el estado `teacher` (convierte numéricos).- `validarDatos()`: valida todos los campos antes de enviar.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_EditarTeacher.jsx.html">components/EditarTeacher.jsx</a>, <a href="components_EditarTeacher.jsx.html#line41">line 41</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="module:components/Footer"><span class="type-signature"></span>module:components/Footer<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Componente `Footer`.Pie de página con enlaces a redes sociales y contacto por email.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_Footer.jsx.html">components/Footer.jsx</a>, <a href="components_Footer.jsx.html#line17">line 17</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="module:components/Inicio"><span class="type-signature"></span>module:components/Inicio<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Componente `Inicio`.Presenta un carrusel sencillo de imágenes con flechas para navegar.- `slides`: array de objetos con `label` e `img`.- `activeStep`: estado que indica la diapositiva activa.Handlers:- `handleNext()`: avanza a la siguiente diapositiva (loop).- `handleBack()`: retrocede a la anterior (loop).
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_Inicio.jsx.html">components/Inicio.jsx</a>, <a href="components_Inicio.jsx.html#line28">line 28</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="module:components/ListadoCourses"><span class="type-signature"></span>module:components/ListadoCourses<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Componente `ListadoCourses`.Recupera y muestra una tabla con los cursos disponibles. Proporcionaacciones para eliminar y editar cursos.Estado principal:- `datos`: array con los cursos (obtenidos de `GET /courses/`).- `error`: mensaje en caso de fallo en la petición.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_ListadoCourses.jsx.html">components/ListadoCourses.jsx</a>, <a href="components_ListadoCourses.jsx.html#line34">line 34</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="module:components/ListadoCoursesFiltro"><span class="type-signature"></span>module:components/ListadoCoursesFiltro<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Componente `ListadoCoursesFiltro`.Muestra cursos filtrados por modalidad (online/presencial). Recupera datosdel endpoint `GET /courses/` y soporta eliminación de cursos.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_ListadoCoursesFiltro.jsx.html">components/ListadoCoursesFiltro.jsx</a>, <a href="components_ListadoCoursesFiltro.jsx.html#line37">line 37</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="module:components/ListadoTeachers"><span class="type-signature"></span>module:components/ListadoTeachers<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Componente `ListadoTeachers`.Recupera y muestra la lista completa de profesores. Permite imprimir yeliminar registros mediante la API (`GET /teachers/`, `DELETE /teachers/:id`).
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_ListadoTeachers.jsx.html">components/ListadoTeachers.jsx</a>, <a href="components_ListadoTeachers.jsx.html#line29">line 29</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="module:components/ListadoTeachersFiltro"><span class="type-signature"></span>module:components/ListadoTeachersFiltro<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Componente `ListadoTeachersFiltro`.Muestra un listado de profesores con opciones de filtrado por "activo" yvarias opciones de exportación/impresión:- Captura en PDF mediante `html2canvas` + `jspdf` (botón "PDF(captura)").- Generación de un PDF con `@react-pdf/renderer` usando `TeachersReportPdf`.Estado principal:- `datos`: array con los profesores obtenidos desde la API `/teachers/`.- `filtroActivo`: string con valores `""|"1"|"0"` para todos/activos/inactivos.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_ListadoTeachersFiltro.jsx.html">components/ListadoTeachersFiltro.jsx</a>, <a href="components_ListadoTeachersFiltro.jsx.html#line53">line 53</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="module:components/NavBar"><span class="type-signature"></span>module:components/NavBar<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Componente `NavBar`.Muestra la barra de navegación con menús desplegables para Profesores y Cursos.- Gestiona estados locales para controlar qué menú está abierto (`anchorEl*`).- Cierra automáticamente los menús al redimensionar la ventana.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_NavBar.jsx.html">components/NavBar.jsx</a>, <a href="components_NavBar.jsx.html#line60">line 60</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="module:components/ScrollTopButton"><span class="type-signature"></span>module:components/ScrollTopButton<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Componente `ScrollTopButton`.Muestra un botón flotante para volver al inicio de la página cuando elusuario ha hecho scroll hacia abajo (>100px). Se oculta automáticamentecuando el scroll está en la parte superior.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_ScrollTopButton.jsx.html">components/ScrollTopButton.jsx</a>, <a href="components_ScrollTopButton.jsx.html#line17">line 17</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="module:pages/Home"><span class="type-signature"></span>module:pages/Home<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Página `Home`.Componente layout que envuelve las rutas hijas mediante `Outlet` yañade la barra de navegación, el botón de subir al inicio y el pie de página.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="pages_Home.jsx.html">pages/Home.jsx</a>, <a href="pages_Home.jsx.html#line18">line 18</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-components_AltaCourse.html">components/AltaCourse</a></li><li><a href="module-components_AltaTeacher.html">components/AltaTeacher</a></li><li><a href="module-components_CoursesPerTeacherChart.html">components/CoursesPerTeacherChart</a></li><li><a href="module-components_EditarCourse.html">components/EditarCourse</a></li><li><a href="module-components_EditarTeacher.html">components/EditarTeacher</a></li><li><a href="module-components_Footer.html">components/Footer</a></li><li><a href="module-components_Inicio.html">components/Inicio</a></li><li><a href="module-components_ListadoCourses.html">components/ListadoCourses</a></li><li><a href="module-components_ListadoCoursesFiltro.html">components/ListadoCoursesFiltro</a></li><li><a href="module-components_ListadoTeachers.html">components/ListadoTeachers</a></li><li><a href="module-components_ListadoTeachersFiltro.html">components/ListadoTeachersFiltro</a></li><li><a href="module-components_NavBar.html">components/NavBar</a></li><li><a href="module-components_ScrollTopButton.html">components/ScrollTopButton</a></li><li><a href="module-pages_ErrorPage.html">pages/ErrorPage</a></li><li><a href="module-pages_Home.html">pages/Home</a></li></ul><h3>Global</h3><ul><li><a href="global.html#api">api</a></li><li><a href="global.html#router">router</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Feb 13 2026 20:19:56 GMT+0100 (hora estándar de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

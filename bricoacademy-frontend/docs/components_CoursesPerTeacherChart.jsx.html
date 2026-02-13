@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/CoursesPerTeacherChart.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/CoursesPerTeacherChart.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module components/CoursesPerTeacherChart
+ * @description Gráfica de cursos por profesor con exportación a PDF.
+ */
+import { useEffect, useRef, useState } from "react";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import Typography from "@mui/material/Typography";
+
+import api from "../api"; // ajusta la ruta si es necesario
+import {
+	BarChart,
+	Bar,
+	XAxis,
+	YAxis,
+	CartesianGrid,
+	Tooltip,
+	Legend,
+	ResponsiveContainer,
+	Cell,
+} from "recharts";
+
+/**
+ * Componente `CoursesPerTeacherChart`.
+ *
+ * Muestra una gráfica de barras con el número de cursos por profesor.
+ * - Realiza una petición a la API en el endpoint `/stats/courses-per-teacher`.
+ * - Usa `recharts` para dibujar la gráfica.
+ * - Permite exportar la sección visible como PDF mediante `html2canvas` y `jspdf`.
+ *
+ * Estado local:
+ * - `data`: array con los datos que alimentan la gráfica (cada elemento: { profesor, totalCursos, ... }).
+ * - `loading`: booleano que indica si se están cargando los datos.
+ * - `error`: mensaje de error en caso de fallo de la llamada.
+ *
+ * Referencias:
+ * - `chartRef`: referencia al contenedor que se captura para el PDF.
+ */
+export default function CoursesPerTeacherChart() {
+	const [data, setData] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
+	const chartRef = useRef(null);
+
+	const COLORS = [
+		"#4CAF50",
+		"#2196F3",
+		"#FF9800",
+		"#9C27B0",
+		"#F44336",
+		"#009688",
+	];
+
+	/**
+	 * Efecto de carga de datos.
+	 * Llama a la API para obtener el número de cursos por profesor y actualiza el estado.
+	 * Maneja `loading` y `error` para mostrar feedback en la UI.
+	 */
+	useEffect(() => {
+		const loadData = async () => {
+			try {
+				setLoading(true);
+				setError(null);
+
+				// api.get YA devuelve response.data
+				const response = await api.get("/stats/courses-per-teacher");
+
+				// response = { ok: true, datos: [...] }
+				setData(response.datos);
+			} catch (err) {
+				// err = { ok:false, mensaje:"..." }
+				setError(err.mensaje || "Error cargando la gráfica");
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		loadData();
+	}, []);
+
+	if (loading) return &lt;p>Cargando gráfica...&lt;/p>;
+	if (error) return &lt;p style={{ color: "red" }}>{error}&lt;/p>;
+	/**
+	 * handleDownloadPdf - captura la sección referenciada por `chartRef` como imagen
+	 * y la inserta en un PDF A4 descargable.
+	 *
+	 * - Comprueba que `chartRef.current` exista antes de capturar.
+	 * - Ajusta la escala para mejorar la calidad de la imagen.
+	 */
+	const handleDownloadPdf = async () => {
+		if (!chartRef.current) return;
+
+		// 1) Captura el div como imagen
+		const canvas = await html2canvas(chartRef.current, {
+			scale: 2, // más calidad
+			useCORS: true,
+			backgroundColor: "#ffffff",
+		});
+
+		const imgData = canvas.toDataURL("image/png");
+
+		// 2) Crea PDF (A4)
+		const pdf = new jsPDF("p", "mm", "a4");
+		const pageWidth = pdf.internal.pageSize.getWidth();
+		const pageHeight = pdf.internal.pageSize.getHeight();
+
+		// 3) Calcula tamaño manteniendo proporción
+		const imgProps = pdf.getImageProperties(imgData);
+		const imgWidth = pageWidth - 20; // margen
+		const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+
+		// 4) Si la imagen es muy alta, la ajustamos
+		const finalHeight = Math.min(imgHeight, pageHeight - 20);
+
+		pdf.addImage(imgData, "PNG", 10, 10, imgWidth, finalHeight);
+
+		pdf.save("grafica-cursos-por-profesor.pdf");
+	};
+
+	return (
+		&lt;Box sx={{ width: "100%" }}>
+			{/* Esto es lo que se captura en el PDF */}
+			&lt;Box
+				ref={chartRef}
+				sx={{
+					width: "100%",
+					p: 2,
+					borderRadius: 2,
+					border: "1px solid #e0e0e0",
+					backgroundColor: "#fff",
+				}}>
+				{/* Cabecera / marca */}
+				&lt;Box
+					sx={{
+						mb: 1,
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "space-between",
+					}}>&lt;/Box>
+
+				{/* Título de la gráfica */}
+				&lt;Typography variant='h6' sx={{ mb: 1 }}>
+					Cursos por profesor
+				&lt;/Typography>
+
+				{/* Contenedor de la gráfica */}
+				&lt;Box sx={{ width: "100%", height: 340 }}>
+					&lt;ResponsiveContainer width='100%' height='100%'>
+						&lt;BarChart data={data}>
+							&lt;CartesianGrid strokeDasharray='3 3' />
+							&lt;XAxis dataKey='profesor' />
+							&lt;YAxis allowDecimals={false} />
+							&lt;Tooltip />
+							&lt;Legend />
+							&lt;Bar dataKey='totalCursos' name='Total cursos'>
+								{data.map((entry, index) => (
+									&lt;Cell
+										key={index}
+										fill={COLORS[index % COLORS.length]}
+									/>
+								))}
+							&lt;/Bar>
+						&lt;/BarChart>
+					&lt;/ResponsiveContainer>
+				&lt;/Box>
+
+				{/* Pie identificativo */}
+				&lt;Box
+					sx={{
+						mt: 1,
+						display: "flex",
+						justifyContent: "space-between",
+					}}>
+					&lt;Typography variant='caption'>BricoAcademy&lt;/Typography>
+					&lt;Typography variant='caption'>
+						{" "}
+						{new Date().toLocaleDateString()}
+					&lt;/Typography>
+					&lt;Typography variant='caption'>
+						Informe generado desde la aplicación
+					&lt;/Typography>
+				&lt;/Box>
+			&lt;/Box>
+
+			{/* Botón fuera del ref */}
+			&lt;Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
+				&lt;Button variant='contained' onClick={handleDownloadPdf}>
+					Descargar PDF
+				&lt;/Button>
+			&lt;/Box>
+		&lt;/Box>
+	);
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-components_AltaCourse.html">components/AltaCourse</a></li><li><a href="module-components_AltaTeacher.html">components/AltaTeacher</a></li><li><a href="module-components_CoursesPerTeacherChart.html">components/CoursesPerTeacherChart</a></li><li><a href="module-components_EditarCourse.html">components/EditarCourse</a></li><li><a href="module-components_EditarTeacher.html">components/EditarTeacher</a></li><li><a href="module-components_Footer.html">components/Footer</a></li><li><a href="module-components_Inicio.html">components/Inicio</a></li><li><a href="module-components_ListadoCourses.html">components/ListadoCourses</a></li><li><a href="module-components_ListadoCoursesFiltro.html">components/ListadoCoursesFiltro</a></li><li><a href="module-components_ListadoTeachers.html">components/ListadoTeachers</a></li><li><a href="module-components_ListadoTeachersFiltro.html">components/ListadoTeachersFiltro</a></li><li><a href="module-components_NavBar.html">components/NavBar</a></li><li><a href="module-components_ScrollTopButton.html">components/ScrollTopButton</a></li><li><a href="module-pages_ErrorPage.html">pages/ErrorPage</a></li><li><a href="module-pages_Home.html">pages/Home</a></li></ul><h3>Global</h3><ul><li><a href="global.html#api">api</a></li><li><a href="global.html#router">router</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Feb 13 2026 20:19:56 GMT+0100 (hora estándar de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

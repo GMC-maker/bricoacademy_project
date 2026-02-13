@@ -1,3 +1,8 @@
+/**
+ * @module components/ListadoTeachersFiltro
+ * @description Listado de profesores con filtros y opciones de impresión/exportación.
+ */
+
 import { useState, useEffect, useMemo, useRef } from "react";
 import api from "../api";
 
@@ -17,6 +22,8 @@ import ClearIcon from "@mui/icons-material/Clear";
 
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import TeachersReportPdf from "../pdf/TeachersReportPdf";
 
 import { useNavigate } from "react-router-dom";
 import {
@@ -31,6 +38,18 @@ import {
 	MenuItem,
 } from "@mui/material";
 
+/**
+ * Componente `ListadoTeachersFiltro`.
+ *
+ * Muestra un listado de profesores con opciones de filtrado por "activo" y
+ * varias opciones de exportación/impresión:
+ * - Captura en PDF mediante `html2canvas` + `jspdf` (botón "PDF(captura)").
+ * - Generación de un PDF con `@react-pdf/renderer` usando `TeachersReportPdf`.
+ *
+ * Estado principal:
+ * - `datos`: array con los profesores obtenidos desde la API `/teachers/`.
+ * - `filtroActivo`: string con valores `""|"1"|"0"` para todos/activos/inactivos.
+ */
 export default function ListadoTeachersFiltro() {
 	const [datos, setDatos] = useState([]);
 	const [error, setError] = useState(null);
@@ -41,6 +60,11 @@ export default function ListadoTeachersFiltro() {
 	const navigate = useNavigate();
 	const printRef = useRef(null);
 
+	/**
+	 * Efecto de carga inicial.
+	 * Realiza una petición `GET /teachers/` y guarda el resultado en `datos`.
+	 * En caso de error actualiza `error` y deja `datos` vacío.
+	 */
 	useEffect(() => {
 		async function fetchData() {
 			try {
@@ -55,12 +79,22 @@ export default function ListadoTeachersFiltro() {
 		fetchData();
 	}, []);
 
+	/**
+	 * datosFiltrados - memoriza la lista filtrada en base a `filtroActivo`.
+	 * - Si `filtroActivo` es "" devuelve todos los registros.
+	 * - Si es "1" devuelve solo los activos, si es "0" solo los inactivos.
+	 */
 	const datosFiltrados = useMemo(() => {
 		if (filtroActivo === "") return datos;
 		const activoBool = filtroActivo === "1";
 		return datos.filter((t) => Boolean(t.active) === activoBool);
 	}, [datos, filtroActivo]);
 
+	/**
+	 * handleDelete - elimina un profesor por `id_teacher` llamando al endpoint
+	 * DELETE `/teachers/:id` y actualiza el estado local para removerlo de la tabla.
+	 * @param {number|string} id_teacher Identificador del profesor a eliminar
+	 */
 	async function handleDelete(id_teacher) {
 		try {
 			await api.delete("/teachers/" + id_teacher);
@@ -74,10 +108,18 @@ export default function ListadoTeachersFiltro() {
 		}
 	}
 
+	/**
+	 * limpiarFiltros - restablece los filtros a su estado por defecto (todos).
+	 */
 	function limpiarFiltros() {
 		setFiltroActivo("");
 	}
 
+	/**
+	 * handleDownloadPdf - captura la sección `printRef` usando `html2canvas` y
+	 * crea un PDF multipágina si la altura supera la de una página A4.
+	 * - Usa un margen fijo y calcula el escalado para mantener la proporción.
+	 */
 	const handleDownloadPdf = async () => {
 		if (!printRef.current) return;
 
@@ -85,11 +127,13 @@ export default function ListadoTeachersFiltro() {
 			scale: 2,
 			useCORS: true,
 			backgroundColor: "#ffffff",
+			windowWidth: printRef.current.scrollWidth,
 		});
 
 		const imgData = canvas.toDataURL("image/png");
 
-		const pdf = new jsPDF("p", "mm", "a4");
+		const pdf = new jsPDF("1", "mm", "a4"); //esto es A4, lo adapto para q salga horizontal
+
 		const pageWidth = pdf.internal.pageSize.getWidth();
 		const pageHeight = pdf.internal.pageSize.getHeight();
 
@@ -139,10 +183,72 @@ export default function ListadoTeachersFiltro() {
 			{/* Botón fuera del ref para que NO salga en el PDF */}
 			<Box
 				className='no-print'
-				sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
-				<Button variant='contained' onClick={handleDownloadPdf}>
-					Descargar PDF
+				sx={{
+					display: "flex",
+					justifyContent: "flex-start",
+					alignItems: "center",
+					gap: 1,
+					mb: 2,
+					flexWrap: "nowrap", // siempre en fila
+					overflowX: "auto", // si no caben en XS, permite scroll horizontal suave
+					"&::-webkit-scrollbar": { height: 6 }, // opcional
+				}}>
+				<Button
+					size='small'
+					variant='contained'
+					onClick={handleDownloadPdf}
+					sx={{
+						minWidth: 120,
+						px: 1.5,
+						py: 0.5,
+						fontSize: "0.75rem",
+						whiteSpace: "nowrap",
+					}}>
+					PDF(captura)
 				</Button>
+
+				<Button
+					size='small'
+					variant='outlined'
+					onClick={() => window.print()}
+					sx={{
+						minWidth: 120,
+						px: 1.5,
+						py: 0.5,
+						fontSize: "0.75rem",
+						whiteSpace: "nowrap",
+					}}>
+					Imprimir
+				</Button>
+
+				<PDFDownloadLink
+					document={
+						<TeachersReportPdf
+							rows={datosFiltrados}
+							filtroActivo={filtroActivo}
+						/>
+					}
+					fileName='informe-profesores.pdf'
+					style={{
+						textDecoration: "none",
+						display: "inline-flex", // para que no se encoja
+					}}>
+					{({ loading }) => (
+						<Button
+							size='small'
+							variant='outlined'
+							disabled={loading}
+							sx={{
+								minWidth: 120,
+								px: 1.5,
+								py: 0.5,
+								fontSize: "0.75rem",
+								whiteSpace: "nowrap",
+							}}>
+							{loading ? "Generando..." : "Informe"}
+						</Button>
+					)}
+				</PDFDownloadLink>
 			</Box>
 
 			{/* todo lo que esté aquí dentro se exporta al PDF */}
@@ -220,8 +326,21 @@ export default function ListadoTeachersFiltro() {
 
 				{/* Tabla */}
 				{datosFiltrados && datosFiltrados.length > 0 && (
-					<TableContainer component={Paper}>
-						<Table stickyHeader aria-label='teachers table'>
+					<TableContainer
+						component={Paper}
+						sx={{ overflowX: "auto" }}>
+						<Table
+							stickyHeader
+							aria-label='teachers table'
+							size='small'
+							sx={{
+								"& th, & td": {
+									fontSize: { xs: "0.75rem", sm: "0.875rem" },
+									py: { xs: 0.5, sm: 1 },
+									px: { xs: 1, sm: 2 },
+									whiteSpace: "nowrap",
+								},
+							}}>
 							<TableHead>
 								<TableRow>
 									<TableCell>Nombre</TableCell>
@@ -254,6 +373,10 @@ export default function ListadoTeachersFiltro() {
 											<Avatar
 												alt={row.fullname}
 												src={row.image_url}
+												sx={{
+													width: { xs: 28, sm: 40 },
+													height: { xs: 28, sm: 40 },
+												}}
 											/>
 										</TableCell>
 
@@ -262,15 +385,17 @@ export default function ListadoTeachersFiltro() {
 											className='no-print'>
 											<Stack
 												direction={{
-													xs: "column",
+													xs: "row",
 													sm: "row",
 												}}
-												spacing={1}
+												spacing={{ xs: 0.5, sm: 1 }}
 												justifyContent='center'
 												alignItems='center'>
 												<Button
 													variant='contained'
 													color='error'
+													size='small'
+													sx={{ minWidth: 0, px: 1 }}
 													onClick={() =>
 														handleDelete(
 															row.id_teacher,
@@ -281,6 +406,8 @@ export default function ListadoTeachersFiltro() {
 												<Button
 													variant='contained'
 													color='primary'
+													size='small'
+													sx={{ minWidth: 0, px: 1 }}
 													onClick={() =>
 														navigate(
 															"/teachers/edit/" +

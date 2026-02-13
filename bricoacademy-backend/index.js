@@ -40,8 +40,18 @@ app.use("/api/stats", statsRoutes);
 //   res.sendFile(path.join(__dirname, "public", "index.html"));
 // });
 
-// SERVIDOR
+// // SERVIDOR
 
-app.listen(port, () => {
-	logMensaje(`Servidor escuchando en el puerto ${port}`);
-});
+// app.listen(port, () => {
+// 	logMensaje(`Servidor escuchando en el puerto ${port}`);
+// });
+
+// SERVIDOR (solo arranca si NO estamos en test)
+if (process.env.NODE_ENV == "test") {
+	app.listen(port, () => {
+		logMensaje(`Servidor escuchando en el puerto ${port}`);
+	});
+}
+
+// Exportamos la app para poder testearla con supertest
+module.exports = app;

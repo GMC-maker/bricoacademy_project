@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/AltaTeacher.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/AltaTeacher.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module components/AltaTeacher
+ * @description Formulario para registrar un nuevo profesor.
+ */
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import Alert from "@mui/material/Alert";
+
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+import "dayjs/locale/es";
+
+import api from "../api";
+
+/**
+ * Componente `AltaTeacher`.
+ *
+ * Formulario para dar de alta a un profesor. Gestiona el estado local del formulario
+ * y realiza la petición `POST` a `/teachers/` cuando el usuario confirma.
+ *
+ * Estado principal (`teacher`):
+ * - `dni` (string)
+ * - `fullname` (string)
+ * - `email` (string)
+ * - `teaching_hours` (number)
+ * - `hourly_rate` (number)
+ * - `hire_date` (string, formato YYYY-MM-DD)
+ * - `image_url` (string)
+ */
+export default function AltaTeacher() {
+	const navigate = useNavigate();
+
+	const [teacher, setTeacher] = useState({
+		dni: "",
+		fullname: "",
+		email: "",
+		teaching_hours: 0,
+		hourly_rate: 0,
+		hire_date: "",
+		image_url: "",
+	});
+
+	const [isCamposValidos, setIsCamposValidos] = useState({
+		dni: true,
+		fullname: true,
+		email: true,
+		teaching_hours: true,
+		hourly_rate: true,
+		hire_date: true,
+		image_url: true,
+	});
+
+	const [isUpdating, setIsUpdating] = useState(false);
+	const [openDialog, setOpenDialog] = useState(false);
+	const [dialogMessage, setDialogMessage] = useState("");
+	const [dialogSeverity, setDialogSeverity] = useState("success");
+
+	/**
+	 * useEffect que observa `isUpdating` y, cuando es true, realiza
+	 * la petición para crear el profesor en el backend.
+	 * - Actualiza `dialogMessage` y `dialogSeverity` según la respuesta.
+	 */
+	useEffect(() => {
+		async function fetchCreateTeacher() {
+			try {
+				const respuesta = await api.post("/teachers/", teacher);
+
+				setDialogMessage(
+					respuesta.mensaje || "Profesor registrado correctamente",
+				);
+				setDialogSeverity("success");
+				setOpenDialog(true);
+			} catch (error) {
+				setDialogMessage(error.mensaje || "Error al crear el profesor");
+				setDialogSeverity("error");
+				setOpenDialog(true);
+			}
+			setIsUpdating(false);
+		}
+
+		if (isUpdating) fetchCreateTeacher();
+	}, [isUpdating]);
+
+	/**
+	 * handleChange - actualiza el estado `teacher` a partir de los inputs.
+	 * Convierte a número los campos numéricos (`teaching_hours`, `hourly_rate`).
+	 * @param {Event} e Evento de cambio del input
+	 */
+	function handleChange(e) {
+		const { name, value } = e.target;
+
+		// numéricos
+		if (name === "teaching_hours") {
+			setTeacher({
+				...teacher,
+				teaching_hours: value === "" ? "" : Number(value),
+			});
+			return;
+		}
+		if (name === "hourly_rate") {
+			setTeacher({
+				...teacher,
+				hourly_rate: value === "" ? "" : Number(value),
+			});
+			return;
+		}
+
+		setTeacher({ ...teacher, [name]: value });
+	}
+
+	/**
+	 * handleClick - validación previa y disparo del envío.
+	 * Si los campos son válidos, marca `isUpdating` para que el efecto
+	 * de creación envíe los datos al servidor.
+	 */
+	function handleClick() {
+		if (isUpdating) return;
+
+		if (validarDatos()) {
+			setIsUpdating(true);
+		}
+	}
+
+	/**
+	 * handleDialogClose - cierra el diálogo de resultado. Si la operación fue
+	 * exitosa (`dialogSeverity === 'success'`), navega al listado de profesores.
+	 */
+	function handleDialogClose() {
+		setOpenDialog(false);
+		if (dialogSeverity === "success") navigate("/teachers");
+	}
+
+	/**
+	 * validarDatos - valida los campos del formulario `teacher`.
+	 * Comprueba formato de DNI, longitud de nombre, email, valores numéricos
+	 * no negativos, existencia de fecha y validez de URL si se proporciona.
+	 * - Actualiza `isCamposValidos` con el resultado de cada campo.
+	 * @returns {boolean} `true` si todos los campos son válidos.
+	 */
+	function validarDatos() {
+		let valido = true;
+		const v = {
+			dni: true,
+			fullname: true,
+			email: true,
+			teaching_hours: true,
+			hourly_rate: true,
+			hire_date: true,
+			image_url: true,
+		};
+
+		// DNI simple (8 números + letra).
+		const dniOk = /^[0-9]{8}[A-Za-z]$/.test(teacher.dni.trim());
+		if (!dniOk) {
+			valido = false;
+			v.dni = false;
+		}
+
+		if (teacher.fullname.trim().length &lt; 3) {
+			valido = false;
+			v.fullname = false;
+		}
+
+		const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(teacher.email.trim());
+		if (!emailOk) {
+			valido = false;
+			v.email = false;
+		}
+
+		if (
+			teacher.teaching_hours === "" ||
+			Number(teacher.teaching_hours) &lt; 0
+		) {
+			valido = false;
+			v.teaching_hours = false;
+		}
+
+		if (teacher.hourly_rate === "" || Number(teacher.hourly_rate) &lt; 0) {
+			valido = false;
+			v.hourly_rate = false;
+		}
+
+		if (!teacher.hire_date) {
+			valido = false;
+			v.hire_date = false;
+		}
+
+		// image_url opcional, pero si viene, debe ser URL válida
+		if (
+			teacher.image_url?.trim() &amp;&amp;
+			!isValidURL(teacher.image_url.trim())
+		) {
+			valido = false;
+			v.image_url = false;
+		}
+
+		setIsCamposValidos(v);
+		return valido;
+	}
+
+	/**
+	 * isValidURL - valida si una cadena es una URL con formato aceptable.
+	 * @param {string} urlString Cadena a validar como URL
+	 * @returns {boolean} `true` si coincide con el patrón de URL
+	 */
+	const isValidURL = (urlString) => {
+		const patronURL = new RegExp(
+			"^(https?:\\/\\/)?" +
+				"((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" +
+				"((\\d{1,3}\\.){3}\\d{1,3}))" +
+				"(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" +
+				"(\\?[;&amp;a-z\\d%_.~+=-]*)?" +
+				"(\\#[-a-z\\d_]*)?$",
+			"i",
+		);
+		return !!patronURL.test(urlString);
+	};
+
+	return (
+		&lt;>
+			&lt;Grid
+				container
+				spacing={2}
+				sx={{ justifyContent: "center", alignItems: "center" }}>
+				&lt;Grid item xs={12} sm={9} md={7}>
+					&lt;Paper
+						elevation={6}
+						sx={{ mt: 3, p: 3, maxWidth: 900, mx: "auto" }}>
+						&lt;Typography variant='h4' align='center' sx={{ mb: 3 }}>
+							Alta de profesor
+						&lt;/Typography>
+
+						&lt;Grid
+							container
+							spacing={2}
+							sx={{
+								justifyContent: "center",
+								alignItems: "center",
+							}}>
+							&lt;Grid item xs={10}>
+								&lt;TextField
+									required
+									fullWidth
+									label='DNI'
+									name='dni'
+									value={teacher.dni}
+									onChange={handleChange}
+									error={!isCamposValidos.dni}
+									helperText={
+										!isCamposValidos.dni &amp;&amp;
+										"Formato: 12345678A"
+									}
+								/>
+							&lt;/Grid>
+
+							&lt;Grid item xs={10}>
+								&lt;TextField
+									required
+									fullWidth
+									label='Nombre completo'
+									name='fullname'
+									value={teacher.fullname}
+									onChange={handleChange}
+									error={!isCamposValidos.fullname}
+									helperText={
+										!isCamposValidos.fullname &amp;&amp;
+										"Mínimo 3 caracteres"
+									}
+								/>
+							&lt;/Grid>
+
+							&lt;Grid item xs={10}>
+								&lt;TextField
+									required
+									fullWidth
+									label='Email'
+									name='email'
+									value={teacher.email}
+									onChange={handleChange}
+									error={!isCamposValidos.email}
+									helperText={
+										!isCamposValidos.email &amp;&amp;
+										"Email no válido"
+									}
+								/>
+							&lt;/Grid>
+
+							&lt;Grid item xs={10}>
+								&lt;LocalizationProvider
+									dateAdapter={AdapterDayjs}
+									adapterLocale='es'>
+									&lt;DatePicker
+										label='Fecha de contratación'
+										minDate={dayjs("1990-01-01")}
+										maxDate={dayjs()}
+										slotProps={{
+											textField: {
+												required: true,
+												fullWidth: true,
+												error: !isCamposValidos.hire_date,
+												helperText:
+													!isCamposValidos.hire_date
+														? "La fecha es obligatoria"
+														: "",
+											},
+										}}
+										value={
+											teacher.hire_date
+												? dayjs(teacher.hire_date)
+												: null
+										}
+										onChange={(newValue) =>
+											setTeacher({
+												...teacher,
+												hire_date: newValue
+													? newValue.format(
+															"YYYY-MM-DD",
+														)
+													: "",
+											})
+										}
+									/>
+								&lt;/LocalizationProvider>
+							&lt;/Grid>
+
+							&lt;Grid item xs={10}>
+								&lt;TextField
+									required
+									fullWidth
+									label='Carga Horaria'
+									name='teaching_hours'
+									type='number'
+									value={teacher.teaching_hours}
+									onChange={handleChange}
+									error={!isCamposValidos.teaching_hours}
+									helperText={
+										!isCamposValidos.teaching_hours &amp;&amp;
+										"No puede ser negativo"
+									}
+									inputProps={{ min: 0 }}
+								/>
+							&lt;/Grid>
+
+							&lt;Grid item xs={10}>
+								&lt;TextField
+									required
+									fullWidth
+									label='Tarifa por hora (€)'
+									name='hourly_rate'
+									type='number'
+									value={teacher.hourly_rate}
+									onChange={handleChange}
+									error={!isCamposValidos.hourly_rate}
+									helperText={
+										!isCamposValidos.hourly_rate &amp;&amp;
+										"No puede ser negativo"
+									}
+									inputProps={{ min: 0, step: "0.01" }}
+								/>
+							&lt;/Grid>
+
+							&lt;Grid item xs={10}>
+								&lt;TextField
+									fullWidth
+									label='URL Imagen (opcional)'
+									name='image_url'
+									value={teacher.image_url}
+									onChange={handleChange}
+									error={!isCamposValidos.image_url}
+									helperText={
+										!isCamposValidos.image_url &amp;&amp;
+										"URL no válida"
+									}
+								/>
+							&lt;/Grid>
+
+							&lt;Grid
+								item
+								xs={10}
+								sx={{
+									display: "flex",
+									gap: 2,
+									justifyContent: "center",
+									mt: 1,
+								}}>
+								&lt;Button
+									variant='contained'
+									color='secondary'
+									onClick={() => navigate("/teachers")}>
+									Cancelar
+								&lt;/Button>
+								&lt;Button
+									variant='contained'
+									color='primary'
+									onClick={handleClick}>
+									Guardar
+								&lt;/Button>
+							&lt;/Grid>
+						&lt;/Grid>
+					&lt;/Paper>
+				&lt;/Grid>
+			&lt;/Grid>
+
+			{/* Dialog */}
+			&lt;Dialog open={openDialog} onClose={handleDialogClose}>
+				&lt;DialogTitle>Resultado&lt;/DialogTitle>
+				&lt;DialogContent>
+					&lt;Alert severity={dialogSeverity}>{dialogMessage}&lt;/Alert>
+				&lt;/DialogContent>
+				&lt;DialogActions>
+					&lt;Button onClick={handleDialogClose}>Aceptar&lt;/Button>
+				&lt;/DialogActions>
+			&lt;/Dialog>
+		&lt;/>
+	);
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-components_AltaCourse.html">components/AltaCourse</a></li><li><a href="module-components_AltaTeacher.html">components/AltaTeacher</a></li><li><a href="module-components_CoursesPerTeacherChart.html">components/CoursesPerTeacherChart</a></li><li><a href="module-components_EditarCourse.html">components/EditarCourse</a></li><li><a href="module-components_EditarTeacher.html">components/EditarTeacher</a></li><li><a href="module-components_Footer.html">components/Footer</a></li><li><a href="module-components_Inicio.html">components/Inicio</a></li><li><a href="module-components_ListadoCourses.html">components/ListadoCourses</a></li><li><a href="module-components_ListadoCoursesFiltro.html">components/ListadoCoursesFiltro</a></li><li><a href="module-components_ListadoTeachers.html">components/ListadoTeachers</a></li><li><a href="module-components_ListadoTeachersFiltro.html">components/ListadoTeachersFiltro</a></li><li><a href="module-components_NavBar.html">components/NavBar</a></li><li><a href="module-components_ScrollTopButton.html">components/ScrollTopButton</a></li><li><a href="module-pages_ErrorPage.html">pages/ErrorPage</a></li><li><a href="module-pages_Home.html">pages/Home</a></li></ul><h3>Global</h3><ul><li><a href="global.html#api">api</a></li><li><a href="global.html#router">router</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Feb 13 2026 20:19:56 GMT+0100 (hora estándar de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

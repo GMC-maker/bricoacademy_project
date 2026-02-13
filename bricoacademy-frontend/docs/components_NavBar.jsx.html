@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/NavBar.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/NavBar.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module components/NavBar
+ * @description Barra de navegación principal de la aplicación.
+ */
+
+import { useEffect } from "react";
+import * as React from "react";
+import { Link } from "react-router-dom";
+
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import MenuIcon from "@mui/icons-material/Menu";
+import Divider from "@mui/material/Divider";
+import ListSubheader from "@mui/material/ListSubheader";
+
+import logo from "../assets/logo.png";
+
+/**
+ * `teacherMenu` - definición de entradas para el menú de profesores.
+ * Cada entrada contiene `id`, `label` y `path` usado por `Link`.
+ */
+const teacherMenu = [
+	{ id: "t_list", label: "Listado de profesores", path: "/teachers" },
+	{ id: "t_new", label: "Alta de profesor", path: "/teachers/new" },
+	{
+		id: "t_filter",
+		label: "Listado por activo/inactivo",
+		path: "/teachers/filter",
+	},
+	{ id: "t_cards", label: "Perfiles", path: "/teachers/cards" },
+];
+
+/**
+ * `courseMenu` - definición de entradas para el menú de cursos.
+ */
+const courseMenu = [
+	{ id: "c_list", label: "Listado de cursos", path: "/courses" },
+	{ id: "c_new", label: "Alta de curso", path: "/courses/new" },
+	{ id: "c_filter", label: "Cursos por fechas", path: "/courses/filter" },
+	{
+		id: "c_chart",
+		label: "Gráfica cursos por profesor",
+		path: "/stats/courses-per-teacher",
+	},
+];
+
+/**
+ * Componente `NavBar`.
+ *
+ * Muestra la barra de navegación con menús desplegables para Profesores y Cursos.
+ * - Gestiona estados locales para controlar qué menú está abierto (`anchorEl*`).
+ * - Cierra automáticamente los menús al redimensionar la ventana.
+ */
+export default function NavBar() {
+	const [anchorElTeachers, setAnchorElTeachers] = React.useState(null);
+	const [anchorElCourses, setAnchorElCourses] = React.useState(null);
+	const [anchorElXS, setAnchorElXS] = React.useState(null);
+
+	/**
+	 * Abre el menú de profesores anclándolo al elemento disparador.
+	 * @param {Event} event Evento que contiene `currentTarget` como ancla
+	 */
+	const handleOpenTeachers = (event) =>
+		setAnchorElTeachers(event.currentTarget);
+
+	/**
+	 * Abre el menú de cursos anclándolo al elemento disparador.
+	 * @param {Event} event Evento que contiene `currentTarget` como ancla
+	 */
+	const handleOpenCourses = (event) =>
+		setAnchorElCourses(event.currentTarget);
+
+	/**
+	 * Abre el menú para vista XS (hamburguesa) anclándolo al elemento disparador.
+	 * @param {Event} event Evento que contiene `currentTarget` como ancla
+	 */
+	const handleOpenXS = (event) => setAnchorElXS(event.currentTarget);
+
+	/**
+	 * handleCloseAll - cierra todos los menús desplegables poniendo sus
+	 * anclas a `null`.
+	 */
+	const handleCloseAll = () => {
+		setAnchorElTeachers(null);
+		setAnchorElCourses(null);
+		setAnchorElXS(null);
+	};
+
+	/**
+	 * Efecto que cierra los menús al redimensionar la ventana para evitar
+	 * que queden dropdowns abiertos en vistas cambiadas.
+	 */
+	useEffect(() => {
+		const handleResize = () => handleCloseAll();
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
+
+	const linkStyle = { color: "black", textDecoration: "none" };
+
+	return (
+		&lt;AppBar position='sticky'>
+			&lt;Toolbar>
+				{/* Logo */}
+				&lt;Box
+					sx={{
+						backgroundColor: "rgba(255,255,255,0.6)",
+						borderRadius: 1,
+						padding: "4px 4px",
+						display: "flex",
+						alignItems: "center",
+						mr: 1,
+					}}>
+					&lt;Box
+						component='img'
+						src={logo}
+						alt='BricoAcademy logo'
+						sx={{ height: 32 }}
+					/>
+				&lt;/Box>
+
+				{/* Marca */}
+				&lt;Typography
+					variant='h6'
+					component={Link}
+					to='/'
+					sx={{
+						flexGrow: 1,
+						color: "inherit",
+						textDecoration: "none",
+					}}>
+					BricoAcademy
+				&lt;/Typography>
+
+				{/* XS (móvil): hamburguesa */}
+				&lt;Box sx={{ display: { xs: "flex", md: "none" } }}>
+					&lt;IconButton color='inherit' onClick={handleOpenXS}>
+						&lt;MenuIcon />
+					&lt;/IconButton>
+
+					&lt;Menu
+						anchorEl={anchorElXS}
+						open={Boolean(anchorElXS)}
+						onClose={handleCloseAll}
+						keepMounted
+						anchorOrigin={{
+							vertical: "bottom",
+							horizontal: "left",
+						}}
+						transformOrigin={{
+							vertical: "top",
+							horizontal: "left",
+						}}>
+						&lt;MenuItem onClick={handleCloseAll}>
+							&lt;Link to='/' style={linkStyle}>
+								Inicio
+							&lt;/Link>
+						&lt;/MenuItem>
+
+						&lt;Divider />
+						&lt;ListSubheader>Menú Profesores&lt;/ListSubheader>
+						{teacherMenu.map((item) => (
+							&lt;MenuItem key={item.id} onClick={handleCloseAll}>
+								&lt;Link to={item.path} style={linkStyle}>
+									{item.label}
+								&lt;/Link>
+							&lt;/MenuItem>
+						))}
+
+						&lt;Divider />
+						&lt;ListSubheader>Menú Cursos&lt;/ListSubheader>
+						{courseMenu.map((item) => (
+							&lt;MenuItem key={item.id} onClick={handleCloseAll}>
+								&lt;Link to={item.path} style={linkStyle}>
+									{item.label}
+								&lt;/Link>
+							&lt;/MenuItem>
+						))}
+					&lt;/Menu>
+				&lt;/Box>
+
+				{/* MD+ (escritorio): botones con dropdown */}
+				&lt;Box sx={{ display: { xs: "none", md: "flex" }, gap: 1 }}>
+					&lt;Button color='inherit' component={Link} to='/'>
+						Inicio
+					&lt;/Button>
+
+					{/* Profesores */}
+					&lt;Button color='inherit' onClick={handleOpenTeachers}>
+						Profesores
+					&lt;/Button>
+					&lt;Menu
+						anchorEl={anchorElTeachers}
+						open={Boolean(anchorElTeachers)}
+						onClose={handleCloseAll}
+						keepMounted
+						anchorOrigin={{
+							vertical: "bottom",
+							horizontal: "left",
+						}}
+						transformOrigin={{
+							vertical: "top",
+							horizontal: "left",
+						}}>
+						{teacherMenu.map((item) => (
+							&lt;MenuItem key={item.id} onClick={handleCloseAll}>
+								&lt;Link to={item.path} style={linkStyle}>
+									{item.label}
+								&lt;/Link>
+							&lt;/MenuItem>
+						))}
+					&lt;/Menu>
+
+					{/* Cursos */}
+					&lt;Button color='inherit' onClick={handleOpenCourses}>
+						Cursos
+					&lt;/Button>
+					&lt;Menu
+						anchorEl={anchorElCourses}
+						open={Boolean(anchorElCourses)}
+						onClose={handleCloseAll}
+						keepMounted
+						anchorOrigin={{
+							vertical: "bottom",
+							horizontal: "left",
+						}}
+						transformOrigin={{
+							vertical: "top",
+							horizontal: "left",
+						}}>
+						{courseMenu.map((item) => (
+							&lt;MenuItem key={item.id} onClick={handleCloseAll}>
+								&lt;Link to={item.path} style={linkStyle}>
+									{item.label}
+								&lt;/Link>
+							&lt;/MenuItem>
+						))}
+					&lt;/Menu>
+				&lt;/Box>
+			&lt;/Toolbar>
+		&lt;/AppBar>
+	);
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-components_AltaCourse.html">components/AltaCourse</a></li><li><a href="module-components_AltaTeacher.html">components/AltaTeacher</a></li><li><a href="module-components_CoursesPerTeacherChart.html">components/CoursesPerTeacherChart</a></li><li><a href="module-components_EditarCourse.html">components/EditarCourse</a></li><li><a href="module-components_EditarTeacher.html">components/EditarTeacher</a></li><li><a href="module-components_Footer.html">components/Footer</a></li><li><a href="module-components_Inicio.html">components/Inicio</a></li><li><a href="module-components_ListadoCourses.html">components/ListadoCourses</a></li><li><a href="module-components_ListadoCoursesFiltro.html">components/ListadoCoursesFiltro</a></li><li><a href="module-components_ListadoTeachers.html">components/ListadoTeachers</a></li><li><a href="module-components_ListadoTeachersFiltro.html">components/ListadoTeachersFiltro</a></li><li><a href="module-components_NavBar.html">components/NavBar</a></li><li><a href="module-components_ScrollTopButton.html">components/ScrollTopButton</a></li><li><a href="module-pages_ErrorPage.html">pages/ErrorPage</a></li><li><a href="module-pages_Home.html">pages/Home</a></li></ul><h3>Global</h3><ul><li><a href="global.html#api">api</a></li><li><a href="global.html#router">router</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Feb 13 2026 20:19:56 GMT+0100 (hora estándar de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

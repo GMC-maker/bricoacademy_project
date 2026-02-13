@@ -1,3 +1,8 @@
+/**
+ * @module components/ListadoCoursesFiltro
+ * @description Listado de cursos con filtros dinámicos.
+ */
+
 import { useState, useEffect } from "react";
 import api from "../api";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +28,12 @@ import {
 	MenuItem,
 } from "@mui/material";
 
+/**
+ * Componente `ListadoCoursesFiltro`.
+ *
+ * Muestra cursos filtrados por modalidad (online/presencial). Recupera datos
+ * del endpoint `GET /courses/` y soporta eliminación de cursos.
+ */
 export default function ListadoCoursesFiltro() {
 	const [datos, setDatos] = useState([]);
 	const [error, setError] = useState(null);
@@ -52,6 +63,10 @@ export default function ListadoCoursesFiltro() {
 		fetchCourses();
 	}, [filtroOnline]);
 
+	/**
+	 * handleDelete - elimina un curso y actualiza la lista local.
+	 * @param {number|string} id_course Identificador del curso a eliminar
+	 */
 	async function handleDelete(id_course) {
 		try {
 			await api.delete("/courses/" + id_course);

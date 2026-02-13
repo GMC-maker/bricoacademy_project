@@ -8,16 +8,20 @@
 	"main": "index.js",
 	"scripts": {
 		"start": "node index.js",
-		"dev": "nodemon index.js"
+		"dev": "nodemon index.js",
+		"test": "cross-env NODE_ENV=test jest --runInBand"
 	},
 	"dependencies": {
 		"cors": "^2.8.6",
-		"dotenv": "^17.3.1",
 		"express": "^5.2.1",
 		"mysql2": "^3.16.1",
 		"sequelize": "^6.37.7"
 	},
 	"devDependencies": {
-		"nodemon": "^3.1.11"
+		"cross-env": "^10.1.0",
+		"dotenv": "^17.3.1",
+		"jest": "^30.2.0",
+		"nodemon": "^3.1.11",
+		"supertest": "^7.2.2"
 	}
 }

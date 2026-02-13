@@ -1,3 +1,8 @@
+/**
+ * @module components/NavBar
+ * @description Barra de navegación principal de la aplicación.
+ */
+
 import { useEffect } from "react";
 import * as React from "react";
 import { Link } from "react-router-dom";
@@ -16,6 +21,10 @@ import ListSubheader from "@mui/material/ListSubheader";
 
 import logo from "../assets/logo.png";
 
+/**
+ * `teacherMenu` - definición de entradas para el menú de profesores.
+ * Cada entrada contiene `id`, `label` y `path` usado por `Link`.
+ */
 const teacherMenu = [
 	{ id: "t_list", label: "Listado de profesores", path: "/teachers" },
 	{ id: "t_new", label: "Alta de profesor", path: "/teachers/new" },
@@ -27,31 +36,66 @@ const teacherMenu = [
 	{ id: "t_cards", label: "Perfiles", path: "/teachers/cards" },
 ];
 
+/**
+ * `courseMenu` - definición de entradas para el menú de cursos.
+ */
 const courseMenu = [
 	{ id: "c_list", label: "Listado de cursos", path: "/courses" },
 	{ id: "c_new", label: "Alta de curso", path: "/courses/new" },
 	{ id: "c_filter", label: "Cursos por fechas", path: "/courses/filter" },
-	{ id: "c_chart", label: "Gráfica cursos por profesor", path: "/stats/courses-per-teacher" },
-
+	{
+		id: "c_chart",
+		label: "Gráfica cursos por profesor",
+		path: "/stats/courses-per-teacher",
+	},
 ];
 
+/**
+ * Componente `NavBar`.
+ *
+ * Muestra la barra de navegación con menús desplegables para Profesores y Cursos.
+ * - Gestiona estados locales para controlar qué menú está abierto (`anchorEl*`).
+ * - Cierra automáticamente los menús al redimensionar la ventana.
+ */
 export default function NavBar() {
 	const [anchorElTeachers, setAnchorElTeachers] = React.useState(null);
 	const [anchorElCourses, setAnchorElCourses] = React.useState(null);
 	const [anchorElXS, setAnchorElXS] = React.useState(null);
 
+	/**
+	 * Abre el menú de profesores anclándolo al elemento disparador.
+	 * @param {Event} event Evento que contiene `currentTarget` como ancla
+	 */
 	const handleOpenTeachers = (event) =>
 		setAnchorElTeachers(event.currentTarget);
+
+	/**
+	 * Abre el menú de cursos anclándolo al elemento disparador.
+	 * @param {Event} event Evento que contiene `currentTarget` como ancla
+	 */
 	const handleOpenCourses = (event) =>
 		setAnchorElCourses(event.currentTarget);
+
+	/**
+	 * Abre el menú para vista XS (hamburguesa) anclándolo al elemento disparador.
+	 * @param {Event} event Evento que contiene `currentTarget` como ancla
+	 */
 	const handleOpenXS = (event) => setAnchorElXS(event.currentTarget);
 
+	/**
+	 * handleCloseAll - cierra todos los menús desplegables poniendo sus
+	 * anclas a `null`.
+	 */
 	const handleCloseAll = () => {
 		setAnchorElTeachers(null);
 		setAnchorElCourses(null);
 		setAnchorElXS(null);
 	};
 
+	/**
+	 * Efecto que cierra los menús al redimensionar la ventana para evitar
+	 * que queden dropdowns abiertos en vistas cambiadas.
+	 */
 	useEffect(() => {
 		const handleResize = () => handleCloseAll();
 		window.addEventListener("resize", handleResize);

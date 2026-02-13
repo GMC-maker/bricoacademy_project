@@ -1,3 +1,7 @@
+/**
+ * @module components/CoursesPerTeacherChart
+ * @description Gráfica de cursos por profesor con exportación a PDF.
+ */
 import { useEffect, useRef, useState } from "react";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -18,6 +22,22 @@ import {
 	Cell,
 } from "recharts";
 
+/**
+ * Componente `CoursesPerTeacherChart`.
+ *
+ * Muestra una gráfica de barras con el número de cursos por profesor.
+ * - Realiza una petición a la API en el endpoint `/stats/courses-per-teacher`.
+ * - Usa `recharts` para dibujar la gráfica.
+ * - Permite exportar la sección visible como PDF mediante `html2canvas` y `jspdf`.
+ *
+ * Estado local:
+ * - `data`: array con los datos que alimentan la gráfica (cada elemento: { profesor, totalCursos, ... }).
+ * - `loading`: booleano que indica si se están cargando los datos.
+ * - `error`: mensaje de error en caso de fallo de la llamada.
+ *
+ * Referencias:
+ * - `chartRef`: referencia al contenedor que se captura para el PDF.
+ */
 export default function CoursesPerTeacherChart() {
 	const [data, setData] = useState([]);
 	const [loading, setLoading] = useState(true);
@@ -33,6 +53,11 @@ export default function CoursesPerTeacherChart() {
 		"#009688",
 	];
 
+	/**
+	 * Efecto de carga de datos.
+	 * Llama a la API para obtener el número de cursos por profesor y actualiza el estado.
+	 * Maneja `loading` y `error` para mostrar feedback en la UI.
+	 */
 	useEffect(() => {
 		const loadData = async () => {
 			try {
@@ -57,6 +82,13 @@ export default function CoursesPerTeacherChart() {
 
 	if (loading) return <p>Cargando gráfica...</p>;
 	if (error) return <p style={{ color: "red" }}>{error}</p>;
+	/**
+	 * handleDownloadPdf - captura la sección referenciada por `chartRef` como imagen
+	 * y la inserta en un PDF A4 descargable.
+	 *
+	 * - Comprueba que `chartRef.current` exista antes de capturar.
+	 * - Ajusta la escala para mejorar la calidad de la imagen.
+	 */
 	const handleDownloadPdf = async () => {
 		if (!chartRef.current) return;
 
@@ -152,7 +184,7 @@ export default function CoursesPerTeacherChart() {
 				</Box>
 			</Box>
 
-			{/* ✅ Botón fuera del ref */}
+			{/* Botón fuera del ref */}
 			<Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
 				<Button variant='contained' onClick={handleDownloadPdf}>
 					Descargar PDF

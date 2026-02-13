@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/EditarTeacher.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/EditarTeacher.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module components/EditarTeacher
+ * @description Formulario para editar la información de un profesor.
+ */
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import MenuItem from "@mui/material/MenuItem";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import Alert from "@mui/material/Alert";
+
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+import "dayjs/locale/es";
+
+import api from "../api";
+
+/**
+ * Componente `EditarTeacher`.
+ *
+ * Edita la información de un profesor existente identificado por `id_teacher`.
+ * - Carga el profesor por id y muestra un formulario similar al de alta.
+ * - Observa `isUpdating` para enviar `PUT /teachers/:id` con los cambios.
+ *
+ * Handlers importantes:
+ * - `fetchTeacher()`: carga los datos iniciales del profesor.
+ * - `handleChange(e)`: actualiza el estado `teacher` (convierte numéricos).
+ * - `validarDatos()`: valida todos los campos antes de enviar.
+ */
+export default function EditarTeacher() {
+	const navigate = useNavigate();
+	const { id_teacher } = useParams();
+
+	const [teacher, setTeacher] = useState({
+		dni: "",
+		fullname: "",
+		email: "",
+		active: 1,
+		status: "ALTA",
+		teaching_hours: 0,
+		hourly_rate: 0,
+		hire_date: "",
+		image_url: "",
+	});
+
+	const [isCamposValidos, setIsCamposValidos] = useState({
+		dni: true,
+		fullname: true,
+		email: true,
+		status: true,
+		teaching_hours: true,
+		hourly_rate: true,
+		hire_date: true,
+		image_url: true,
+	});
+
+	const [isUpdating, setIsUpdating] = useState(false);
+	const [openDialog, setOpenDialog] = useState(false);
+	const [dialogMessage, setDialogMessage] = useState("");
+	const [dialogSeverity, setDialogSeverity] = useState("success");
+
+	/**
+	 * Efecto que recupera los datos del profesor por id.
+	 * En caso de error muestra un diálogo con el mensaje de fallo.
+	 */
+	useEffect(() => {
+		async function fetchTeacher() {
+			try {
+				const respuesta = await api.get(`/teachers/${id_teacher}`);
+				setTeacher(respuesta.datos);
+			} catch (error) {
+				setDialogMessage(
+					error.mensaje || "Error al recuperar el profesor",
+				);
+				setDialogSeverity("error");
+				setOpenDialog(true);
+			}
+		}
+		fetchTeacher();
+	}, [id_teacher]);
+
+	/**
+	 * Efecto que observa `isUpdating` y realiza la petición de actualización
+	 * `PUT /teachers/:id` cuando se pide guardar los cambios.
+	 */
+	useEffect(() => {
+		async function fetchUpdateTeacher() {
+			try {
+				await api.put(`/teachers/${id_teacher}`, teacher);
+
+				setDialogMessage("Actualización correcta del profesor");
+				setDialogSeverity("success");
+				setOpenDialog(true);
+			} catch (error) {
+				setDialogMessage(
+					error.mensaje || "Error al actualizar el profesor",
+				);
+				setDialogSeverity("error");
+				setOpenDialog(true);
+			}
+			setIsUpdating(false);
+		}
+
+		if (isUpdating) fetchUpdateTeacher();
+	}, [isUpdating]);
+
+	function handleChange(e) {
+		const { name, value } = e.target;
+
+		if (name === "teaching_hours") {
+			setTeacher({
+				...teacher,
+				teaching_hours: value === "" ? "" : Number(value),
+			});
+			return;
+		}
+		if (name === "hourly_rate") {
+			setTeacher({
+				...teacher,
+				hourly_rate: value === "" ? "" : Number(value),
+			});
+			return;
+		}
+
+		setTeacher({ ...teacher, [name]: value });
+	}
+
+	function handleClick() {
+		if (isUpdating) return;
+
+		if (validarDatos()) setIsUpdating(true);
+	}
+
+	function handleDialogClose() {
+		setOpenDialog(false);
+		if (dialogSeverity === "success") navigate("/teachers");
+	}
+
+	function validarDatos() {
+		let valido = true;
+		const v = {
+			dni: true,
+			fullname: true,
+			email: true,
+			status: true,
+			teaching_hours: true,
+			hourly_rate: true,
+			hire_date: true,
+			image_url: true,
+		};
+
+		const dniOk = /^[0-9]{8}[A-Za-z]$/.test(
+			String(teacher.dni || "").trim(),
+		);
+		if (!dniOk) {
+			valido = false;
+			v.dni = false;
+		}
+
+		if (String(teacher.fullname || "").trim().length &lt; 3) {
+			valido = false;
+			v.fullname = false;
+		}
+
+		const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+			String(teacher.email || "").trim(),
+		);
+		if (!emailOk) {
+			valido = false;
+			v.email = false;
+		}
+
+		if (!teacher.hire_date) {
+			valido = false;
+			v.hire_date = false;
+		}
+
+		if (
+			teacher.teaching_hours === "" ||
+			Number(teacher.teaching_hours) &lt; 0
+		) {
+			valido = false;
+			v.teaching_hours = false;
+		}
+
+		if (teacher.hourly_rate === "" || Number(teacher.hourly_rate) &lt; 0) {
+			valido = false;
+			v.hourly_rate = false;
+		}
+
+		// status: ALTA / PERMISO / BAJA
+		const statusOk = ["ALTA", "PERMISO", "BAJA"].includes(
+			String(teacher.status || "").toUpperCase(),
+		);
+		if (!statusOk) {
+			valido = false;
+			v.status = false;
+		}
+
+		if (
+			teacher.image_url?.trim() &amp;&amp;
+			!isValidURL(teacher.image_url.trim())
+		) {
+			valido = false;
+			v.image_url = false;
+		}
+
+		setIsCamposValidos(v);
+		return valido;
+	}
+
+	const isValidURL = (urlString) => {
+		const patronURL = new RegExp(
+			"^(https?:\\/\\/)?" +
+				"((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" +
+				"((\\d{1,3}\\.){3}\\d{1,3}))" +
+				"(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" +
+				"(\\?[;&amp;a-z\\d%_.~+=-]*)?" +
+				"(\\#[-a-z\\d_]*)?$",
+			"i",
+		);
+		return !!patronURL.test(urlString);
+	};
+
+	return (
+		&lt;>
+			&lt;Grid
+				container
+				spacing={2}
+				sx={{ justifyContent: "center", alignItems: "center" }}>
+				&lt;Grid item xs={12} sm={9} md={7}>
+					&lt;Paper
+						elevation={6}
+						sx={{ mt: 3, p: 3, maxWidth: 900, mx: "auto" }}>
+						&lt;Typography variant='h4' align='center' sx={{ mb: 3 }}>
+							Editar profesor
+						&lt;/Typography>
+
+						&lt;Grid
+							container
+							spacing={2}
+							sx={{
+								justifyContent: "center",
+								alignItems: "center",
+							}}>
+							&lt;Grid item xs={10}>
+								&lt;TextField
+									required
+									fullWidth
+									label='DNI'
+									name='dni'
+									value={teacher.dni || ""}
+									onChange={handleChange}
+									error={!isCamposValidos.dni}
+									helperText={
+										!isCamposValidos.dni &amp;&amp;
+										"Formato: 12345678A"
+									}
+								/>
+							&lt;/Grid>
+
+							&lt;Grid item xs={10}>
+								&lt;TextField
+									required
+									fullWidth
+									label='Nombre completo'
+									name='fullname'
+									value={teacher.fullname || ""}
+									onChange={handleChange}
+									error={!isCamposValidos.fullname}
+									helperText={
+										!isCamposValidos.fullname &amp;&amp;
+										"Mínimo 3 caracteres"
+									}
+								/>
+							&lt;/Grid>
+
+							&lt;Grid item xs={10}>
+								&lt;TextField
+									required
+									fullWidth
+									label='Email'
+									name='email'
+									value={teacher.email || ""}
+									onChange={handleChange}
+									error={!isCamposValidos.email}
+									helperText={
+										!isCamposValidos.email &amp;&amp;
+										"Email no válido"
+									}
+								/>
+							&lt;/Grid>
+
+							&lt;Grid item xs={10}>
+								&lt;TextField
+									select
+									required
+									fullWidth
+									label='Estado'
+									name='status'
+									value={teacher.status || "ALTA"}
+									onChange={(e) =>
+										setTeacher({
+											...teacher,
+											status: e.target.value.toUpperCase(),
+										})
+									}
+									error={!isCamposValidos.status}
+									helperText={
+										!isCamposValidos.status &amp;&amp;
+										"Selecciona un estado válido"
+									}>
+									&lt;MenuItem value='ALTA'>ALTA&lt;/MenuItem>
+									&lt;MenuItem value='PERMISO'>PERMISO&lt;/MenuItem>
+									&lt;MenuItem value='BAJA'>BAJA&lt;/MenuItem>
+								&lt;/TextField>
+							&lt;/Grid>
+
+							&lt;Grid item xs={10}>
+								&lt;LocalizationProvider
+									dateAdapter={AdapterDayjs}
+									adapterLocale='es'>
+									&lt;DatePicker
+										label='Fecha de contratación'
+										minDate={dayjs("1990-01-01")}
+										maxDate={dayjs()}
+										slotProps={{
+											textField: {
+												required: true,
+												fullWidth: true,
+												error: !isCamposValidos.hire_date,
+												helperText:
+													!isCamposValidos.hire_date
+														? "La fecha es obligatoria"
+														: "",
+											},
+										}}
+										value={
+											teacher.hire_date
+												? dayjs(teacher.hire_date)
+												: null
+										}
+										onChange={(newValue) =>
+											setTeacher({
+												...teacher,
+												hire_date: newValue
+													? newValue.format(
+															"YYYY-MM-DD",
+														)
+													: "",
+											})
+										}
+									/>
+								&lt;/LocalizationProvider>
+							&lt;/Grid>
+
+							&lt;Grid item xs={10}>
+								&lt;TextField
+									required
+									fullWidth
+									label='Horas lectivas'
+									name='teaching_hours'
+									type='number'
+									value={teacher.teaching_hours ?? 0}
+									onChange={handleChange}
+									error={!isCamposValidos.teaching_hours}
+									helperText={
+										!isCamposValidos.teaching_hours &amp;&amp;
+										"No puede ser negativo"
+									}
+									inputProps={{ min: 0 }}
+								/>
+							&lt;/Grid>
+
+							&lt;Grid item xs={10}>
+								&lt;TextField
+									required
+									fullWidth
+									label='Tarifa por hora (€)'
+									name='hourly_rate'
+									type='number'
+									value={teacher.hourly_rate ?? 0}
+									onChange={handleChange}
+									error={!isCamposValidos.hourly_rate}
+									helperText={
+										!isCamposValidos.hourly_rate &amp;&amp;
+										"No puede ser negativo"
+									}
+									inputProps={{ min: 0, step: "0.01" }}
+								/>
+							&lt;/Grid>
+
+							&lt;Grid item xs={10}>
+								&lt;TextField
+									fullWidth
+									label='URL Imagen (opcional)'
+									name='image_url'
+									value={teacher.image_url || ""}
+									onChange={handleChange}
+									error={!isCamposValidos.image_url}
+									helperText={
+										!isCamposValidos.image_url &amp;&amp;
+										"URL no válida"
+									}
+								/>
+							&lt;/Grid>
+
+							&lt;Grid
+								item
+								xs={10}
+								sx={{
+									display: "flex",
+									gap: 2,
+									justifyContent: "center",
+									mt: 1,
+								}}>
+								&lt;Button
+									variant='contained'
+									color='secondary'
+									onClick={() => navigate("/teachers")}>
+									Cancelar
+								&lt;/Button>
+								&lt;Button
+									variant='contained'
+									color='primary'
+									onClick={handleClick}>
+									Guardar cambios
+								&lt;/Button>
+							&lt;/Grid>
+						&lt;/Grid>
+					&lt;/Paper>
+				&lt;/Grid>
+			&lt;/Grid>
+
+			&lt;Dialog open={openDialog} onClose={handleDialogClose}>
+				&lt;DialogTitle>Resultado&lt;/DialogTitle>
+				&lt;DialogContent>
+					&lt;Alert severity={dialogSeverity}>{dialogMessage}&lt;/Alert>
+				&lt;/DialogContent>
+				&lt;DialogActions>
+					&lt;Button onClick={handleDialogClose}>Aceptar&lt;/Button>
+				&lt;/DialogActions>
+			&lt;/Dialog>
+		&lt;/>
+	);
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-components_AltaCourse.html">components/AltaCourse</a></li><li><a href="module-components_AltaTeacher.html">components/AltaTeacher</a></li><li><a href="module-components_CoursesPerTeacherChart.html">components/CoursesPerTeacherChart</a></li><li><a href="module-components_EditarCourse.html">components/EditarCourse</a></li><li><a href="module-components_EditarTeacher.html">components/EditarTeacher</a></li><li><a href="module-components_Footer.html">components/Footer</a></li><li><a href="module-components_Inicio.html">components/Inicio</a></li><li><a href="module-components_ListadoCourses.html">components/ListadoCourses</a></li><li><a href="module-components_ListadoCoursesFiltro.html">components/ListadoCoursesFiltro</a></li><li><a href="module-components_ListadoTeachers.html">components/ListadoTeachers</a></li><li><a href="module-components_ListadoTeachersFiltro.html">components/ListadoTeachersFiltro</a></li><li><a href="module-components_NavBar.html">components/NavBar</a></li><li><a href="module-components_ScrollTopButton.html">components/ScrollTopButton</a></li><li><a href="module-pages_ErrorPage.html">pages/ErrorPage</a></li><li><a href="module-pages_Home.html">pages/Home</a></li></ul><h3>Global</h3><ul><li><a href="global.html#api">api</a></li><li><a href="global.html#router">router</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Feb 13 2026 20:19:56 GMT+0100 (hora estándar de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

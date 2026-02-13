@@ -1,3 +1,8 @@
+/**
+ * @module components/ListadoCourses
+ * @description Tabla que muestra el listado completo de cursos.
+ */
+
 import { useState, useEffect } from "react";
 import api from "../api";
 import { useNavigate } from "react-router-dom";
@@ -16,6 +21,16 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { Stack } from "@mui/material";
 
+/**
+ * Componente `ListadoCourses`.
+ *
+ * Recupera y muestra una tabla con los cursos disponibles. Proporciona
+ * acciones para eliminar y editar cursos.
+ *
+ * Estado principal:
+ * - `datos`: array con los cursos (obtenidos de `GET /courses/`).
+ * - `error`: mensaje en caso de fallo en la petición.
+ */
 export default function ListadoCourses() {
 	const [datos, setDatos] = useState([]);
 	const [error, setError] = useState(null);
@@ -35,6 +50,11 @@ export default function ListadoCourses() {
 		fetchCourses();
 	}, []);
 
+	/**
+	 * handleDelete - elimina un curso tras confirmar con el usuario.
+	 * Realiza `DELETE /courses/:id` y actualiza el estado local.
+	 * @param {number|string} id_course Identificador del curso
+	 */
 	async function handleDelete(id_course) {
 		if (!window.confirm("¿Seguro que quieres borrar este curso?")) return;
 

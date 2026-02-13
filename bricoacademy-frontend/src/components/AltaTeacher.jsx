@@ -1,3 +1,7 @@
+/**
+ * @module components/AltaTeacher
+ * @description Formulario para registrar un nuevo profesor.
+ */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -21,6 +25,21 @@ import "dayjs/locale/es";
 
 import api from "../api";
 
+/**
+ * Componente `AltaTeacher`.
+ *
+ * Formulario para dar de alta a un profesor. Gestiona el estado local del formulario
+ * y realiza la petición `POST` a `/teachers/` cuando el usuario confirma.
+ *
+ * Estado principal (`teacher`):
+ * - `dni` (string)
+ * - `fullname` (string)
+ * - `email` (string)
+ * - `teaching_hours` (number)
+ * - `hourly_rate` (number)
+ * - `hire_date` (string, formato YYYY-MM-DD)
+ * - `image_url` (string)
+ */
 export default function AltaTeacher() {
 	const navigate = useNavigate();
 
@@ -49,6 +68,11 @@ export default function AltaTeacher() {
 	const [dialogMessage, setDialogMessage] = useState("");
 	const [dialogSeverity, setDialogSeverity] = useState("success");
 
+	/**
+	 * useEffect que observa `isUpdating` y, cuando es true, realiza
+	 * la petición para crear el profesor en el backend.
+	 * - Actualiza `dialogMessage` y `dialogSeverity` según la respuesta.
+	 */
 	useEffect(() => {
 		async function fetchCreateTeacher() {
 			try {
@@ -70,6 +94,11 @@ export default function AltaTeacher() {
 		if (isUpdating) fetchCreateTeacher();
 	}, [isUpdating]);
 
+	/**
+	 * handleChange - actualiza el estado `teacher` a partir de los inputs.
+	 * Convierte a número los campos numéricos (`teaching_hours`, `hourly_rate`).
+	 * @param {Event} e Evento de cambio del input
+	 */
 	function handleChange(e) {
 		const { name, value } = e.target;
 
@@ -92,6 +121,11 @@ export default function AltaTeacher() {
 		setTeacher({ ...teacher, [name]: value });
 	}
 
+	/**
+	 * handleClick - validación previa y disparo del envío.
+	 * Si los campos son válidos, marca `isUpdating` para que el efecto
+	 * de creación envíe los datos al servidor.
+	 */
 	function handleClick() {
 		if (isUpdating) return;
 
@@ -100,11 +134,22 @@ export default function AltaTeacher() {
 		}
 	}
 
+	/**
+	 * handleDialogClose - cierra el diálogo de resultado. Si la operación fue
+	 * exitosa (`dialogSeverity === 'success'`), navega al listado de profesores.
+	 */
 	function handleDialogClose() {
 		setOpenDialog(false);
 		if (dialogSeverity === "success") navigate("/teachers");
 	}
 
+	/**
+	 * validarDatos - valida los campos del formulario `teacher`.
+	 * Comprueba formato de DNI, longitud de nombre, email, valores numéricos
+	 * no negativos, existencia de fecha y validez de URL si se proporciona.
+	 * - Actualiza `isCamposValidos` con el resultado de cada campo.
+	 * @returns {boolean} `true` si todos los campos son válidos.
+	 */
 	function validarDatos() {
 		let valido = true;
 		const v = {
@@ -166,6 +211,11 @@ export default function AltaTeacher() {
 		return valido;
 	}
 
+	/**
+	 * isValidURL - valida si una cadena es una URL con formato aceptable.
+	 * @param {string} urlString Cadena a validar como URL
+	 * @returns {boolean} `true` si coincide con el patrón de URL
+	 */
 	const isValidURL = (urlString) => {
 		const patronURL = new RegExp(
 			"^(https?:\\/\\/)?" +

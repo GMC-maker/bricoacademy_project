@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/Inicio.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/Inicio.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module components/Inicio
+ * @description Componente de inicio con contenido principal o presentación.
+ */
+
+import { useState } from "react";
+import { Box, Typography, IconButton } from "@mui/material";
+import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import bricolaje1 from "../assets/carousel/bricolaje1.jpg";
+import bricolaje2 from "../assets/carousel/bricolaje2.jpg";
+import bricolaje3 from "../assets/carousel/bricolaje3.jpg";
+import carpinteria from "../assets/carousel/carpinteria.jpg";
+import pottery from "../assets/carousel/pottery.jpg";
+import { Link } from "react-router-dom";
+
+/**
+ * Componente `Inicio`.
+ *
+ * Presenta un carrusel sencillo de imágenes con flechas para navegar.
+ * - `slides`: array de objetos con `label` e `img`.
+ * - `activeStep`: estado que indica la diapositiva activa.
+ *
+ * Handlers:
+ * - `handleNext()`: avanza a la siguiente diapositiva (loop).
+ * - `handleBack()`: retrocede a la anterior (loop).
+ */
+export default function Inicio() {
+	const slides = [
+		{
+			label: "Manualidades creativas",
+			img: bricolaje2,
+		},
+		{
+			label: "Bricolaje en casa",
+			img: bricolaje1,
+		},
+		{
+			label: "Restauración y decoración",
+			img: bricolaje3,
+		},
+		{
+			label: "Cursos online y presenciales",
+			img: carpinteria,
+		},
+		{
+			label: "Excelentes Profesores",
+			img: pottery,
+		},
+	];
+
+	const [activeStep, setActiveStep] = useState(0);
+
+	const handleNext = () => {
+		setActiveStep((prev) => (prev + 1) % slides.length); //loop
+	};
+
+	const handleBack = () => {
+		setActiveStep((prev) => (prev - 1 + slides.length) % slides.length); // loop
+	};
+
+	return (
+		&lt;Box sx={{ width: "100%" }}>
+			&lt;Typography
+				variant='h3'
+				component='h1'
+				align='center'
+				sx={{ mt: 4, mb: 2 }}>
+				Bienvenido a BricoAcademy
+			&lt;/Typography>
+
+			{/* Carrusel full width */}
+			&lt;Box
+				sx={{
+					position: "relative",
+					width: "100%",
+					height: { xs: 220, md: 420 },
+					overflow: "hidden",
+				}}>
+				&lt;Box
+					component='img'
+					src={slides[activeStep].img}
+					alt={slides[activeStep].label}
+					sx={{
+						width: "100%",
+						height: "100%",
+						objectFit: "cover",
+						display: "block",
+					}}
+				/>
+
+				{/* Flecha izquierda */}
+				&lt;IconButton
+					onClick={handleBack}
+					sx={{
+						position: "absolute",
+						top: "50%",
+						left: 12,
+						transform: "translateY(-50%)",
+						backgroundColor: "rgba(255,255,255,0.55)",
+						"&amp;:hover": {
+							backgroundColor: "rgba(255,255,255,0.75)",
+						},
+					}}>
+					&lt;KeyboardArrowLeft />
+				&lt;/IconButton>
+
+				{/* Flecha derecha */}
+				&lt;IconButton
+					onClick={handleNext}
+					sx={{
+						position: "absolute",
+						top: "50%",
+						right: 12,
+						transform: "translateY(-50%)",
+						backgroundColor: "rgba(255,255,255,0.55)",
+						"&amp;:hover": {
+							backgroundColor: "rgba(255,255,255,0.75)",
+						},
+					}}>
+					&lt;KeyboardArrowRight />
+				&lt;/IconButton>
+
+				{/* Texto sobre la imagen (suave) */}
+				&lt;Box
+					sx={{
+						position: "absolute",
+						left: 16,
+						bottom: 16,
+						backgroundColor: "rgba(0,0,0,0.35)",
+						color: "white",
+						px: 2,
+						py: 1,
+						borderRadius: 2,
+					}}>
+					{slides[activeStep].label}
+				&lt;/Box>
+			&lt;/Box>
+
+			{/* Texto descriptivo */}
+			&lt;Typography
+				variant='h6'
+				align='center'
+				sx={{ maxWidth: 900, mx: "auto", mt: 3, px: 2 }}>
+				Academia de manualidades y bricolaje con cursos presenciales y
+				online. Aprende paso a paso con profesorado especializado y
+				materiales prácticos.
+			&lt;/Typography>
+		&lt;/Box>
+	);
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-components_AltaCourse.html">components/AltaCourse</a></li><li><a href="module-components_AltaTeacher.html">components/AltaTeacher</a></li><li><a href="module-components_CoursesPerTeacherChart.html">components/CoursesPerTeacherChart</a></li><li><a href="module-components_EditarCourse.html">components/EditarCourse</a></li><li><a href="module-components_EditarTeacher.html">components/EditarTeacher</a></li><li><a href="module-components_Footer.html">components/Footer</a></li><li><a href="module-components_Inicio.html">components/Inicio</a></li><li><a href="module-components_ListadoCourses.html">components/ListadoCourses</a></li><li><a href="module-components_ListadoCoursesFiltro.html">components/ListadoCoursesFiltro</a></li><li><a href="module-components_ListadoTeachers.html">components/ListadoTeachers</a></li><li><a href="module-components_ListadoTeachersFiltro.html">components/ListadoTeachersFiltro</a></li><li><a href="module-components_NavBar.html">components/NavBar</a></li><li><a href="module-components_ScrollTopButton.html">components/ScrollTopButton</a></li><li><a href="module-pages_ErrorPage.html">pages/ErrorPage</a></li><li><a href="module-pages_Home.html">pages/Home</a></li></ul><h3>Global</h3><ul><li><a href="global.html#api">api</a></li><li><a href="global.html#router">router</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Feb 13 2026 20:19:56 GMT+0100 (hora estándar de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,3 +1,8 @@
+/**
+ * @module components/EditarCourse
+ * @description Formulario para modificar los datos de un curso existente.
+ */
+
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -22,6 +27,19 @@ import "dayjs/locale/es";
 
 import api from "../api";
 
+/**
+ * Componente `EditarCourse`.
+ *
+ * Permite editar un curso existente identificado por `id_course`.
+ * - Carga los datos del curso y la lista de profesores para el select.
+ * - Observa `isUpdating` para realizar la petición `PUT` de actualización.
+ *
+ * Handlers principales:
+ * - `fetchCourse()` efecto: obtiene el curso por id y normaliza `id_teacher`.
+ * - `handleChange(e)`: actualiza el estado `course` (convierte numéricos y modalidad).
+ * - `handleClick()`: valida y dispara la actualización.
+ * - `validarDatos()`: validación local de campos.
+ */
 export default function EditarCourse() {
 	const navigate = useNavigate();
 	const { id_course } = useParams();
@@ -52,6 +70,9 @@ export default function EditarCourse() {
 	const [dialogMessage, setDialogMessage] = useState("");
 	const [dialogSeverity, setDialogSeverity] = useState("success");
 
+	/**
+	 * Efecto que carga la lista de profesores para el select.
+	 */
 	useEffect(() => {
 		async function fetchTeachers() {
 			try {
@@ -64,6 +85,10 @@ export default function EditarCourse() {
 		fetchTeachers();
 	}, []);
 
+	/**
+	 * Efecto que carga los datos del curso actual (`/courses/:id`).
+	 * Normaliza `id_teacher` a string para que funcione correctamente en el select.
+	 */
 	useEffect(() => {
 		async function fetchCourse() {
 			try {
@@ -86,6 +111,10 @@ export default function EditarCourse() {
 		fetchCourse();
 	}, [id_course]);
 
+	/**
+	 * Efecto que realiza la actualización cuando `isUpdating` es true.
+	 * Envía `PUT /courses/:id` con el payload normalizado.
+	 */
 	useEffect(() => {
 		async function fetchUpdateCourse() {
 			try {

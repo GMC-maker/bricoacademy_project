@@ -1,3 +1,9 @@
+/**
+ * @module components/AltaCourse
+ * @description Formulario para crear un nuevo curso en la aplicación.
+ */
+
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -22,6 +28,20 @@ import "dayjs/locale/es";
 
 import api from "../api";
 
+/**
+ * Componente `AltaCourse`.
+ *
+ * Formulario para crear un nuevo curso. Maneja el estado del formulario,
+ * carga una lista opcional de profesores para el select y realiza la petición
+ * `POST /courses/` cuando el usuario confirma.
+ *
+ * Funciones/handlers principales:
+ * - `useEffect` (carga de `teachers`): obtiene la lista de profesores para el select.
+ * - `useEffect` (creación): observa `isUpdating` y realiza la petición de creación.
+ * - `handleChange(e)`: actualiza el estado `course` según los inputs (convierte numéricos).
+ * - `handleClick()`: valida y dispara la creación.
+ * - `validarDatos()`: valida los campos del formulario.
+ */
 export default function AltaCourse() {
 	const navigate = useNavigate();
 
@@ -52,6 +72,10 @@ export default function AltaCourse() {
 	const [dialogSeverity, setDialogSeverity] = useState("success");
 
 	// cargar teachers (para select, opcional)
+	/**
+	 * Efecto que carga los profesores para poblar el select.
+	 * No bloquea el envío del formulario; en caso de error deja la lista vacía.
+	 */
 	useEffect(() => {
 		async function fetchTeachers() {
 			try {

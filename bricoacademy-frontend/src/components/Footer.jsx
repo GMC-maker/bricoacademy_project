@@ -1,9 +1,19 @@
+/**
+ * @module components/Footer
+ * @description Pie de página de la aplicación BricoAcademy.
+ */
+
 import IconButton from "@mui/material/IconButton";
-import EmailIcon from "@mui/icons-material/Email"
+import EmailIcon from "@mui/icons-material/Email";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import { Box, Typography } from "@mui/material";
 
+/**
+ * Componente `Footer`.
+ *
+ * Pie de página con enlaces a redes sociales y contacto por email.
+ */
 export default function Footer() {
 	return (
 		<Box
@@ -33,7 +43,7 @@ export default function Footer() {
 				</IconButton>
 
 				<IconButton
-					component="a"
+					component='a'
 					aria-label='Contact us'
 					href='mailto:info@bricoacademy.com'>
 					<EmailIcon />

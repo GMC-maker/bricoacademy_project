@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/ListadoCoursesFiltro.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/ListadoCoursesFiltro.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module components/ListadoCoursesFiltro
+ * @description Listado de cursos con filtros dinámicos.
+ */
+
+import { useState, useEffect } from "react";
+import api from "../api";
+import { useNavigate } from "react-router-dom";
+
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import Avatar from "@mui/material/Avatar";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+
+import {
+	Stack,
+	FormControl,
+	InputLabel,
+	Select,
+	MenuItem,
+} from "@mui/material";
+
+/**
+ * Componente `ListadoCoursesFiltro`.
+ *
+ * Muestra cursos filtrados por modalidad (online/presencial). Recupera datos
+ * del endpoint `GET /courses/` y soporta eliminación de cursos.
+ */
+export default function ListadoCoursesFiltro() {
+	const [datos, setDatos] = useState([]);
+	const [error, setError] = useState(null);
+
+	// "" = todos, "1" = online, "0" = presencial
+	const [filtroOnline, setFiltroOnline] = useState("");
+
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		async function fetchCourses() {
+			try {
+				let url = "/courses/";
+				if (filtroOnline !== "") {
+					url += "?online=" + filtroOnline;
+				}
+
+				const respuesta = await api.get(url);
+				setDatos(respuesta.datos);
+				setError(null);
+			} catch (error) {
+				setError(error.mensaje || "Error al cargar cursos");
+				setDatos([]);
+			}
+		}
+
+		fetchCourses();
+	}, [filtroOnline]);
+
+	/**
+	 * handleDelete - elimina un curso y actualiza la lista local.
+	 * @param {number|string} id_course Identificador del curso a eliminar
+	 */
+	async function handleDelete(id_course) {
+		try {
+			await api.delete("/courses/" + id_course);
+			const datos_nuevos = datos.filter((c) => c.id_course !== id_course);
+			setDatos(datos_nuevos);
+			setError(null);
+		} catch (error) {
+			setError(error.mensaje || "No se pudo conectar al servidor");
+			setDatos([]);
+		}
+	}
+
+	if (error != null) {
+		return (
+			&lt;Typography variant='h5' align='center' sx={{ mt: 3 }}>
+				{error}
+			&lt;/Typography>
+		);
+	}
+
+	return (
+		&lt;>
+			&lt;Typography variant='h4' align='center' sx={{ my: 3 }}>
+				Cursos (Online / Presencial)
+			&lt;/Typography>
+
+			{/* SELECT FILTRO */}
+			&lt;FormControl sx={{ minWidth: 220, mb: 3 }}>
+				&lt;InputLabel>Modalidad&lt;/InputLabel>
+				&lt;Select
+					value={filtroOnline}
+					label='Modalidad'
+					onChange={(e) => setFiltroOnline(e.target.value)}>
+					&lt;MenuItem value=''>Todos&lt;/MenuItem>
+					&lt;MenuItem value='1'>Online&lt;/MenuItem>
+					&lt;MenuItem value='0'>Presencial&lt;/MenuItem>
+				&lt;/Select>
+			&lt;/FormControl>
+
+			{/* MENSAJE SI NO HAY */}
+			{(!datos || datos.length === 0) &amp;&amp; (
+				&lt;Typography variant='h5' align='center' sx={{ mt: 3 }}>
+					No hay cursos disponibles
+				&lt;/Typography>
+			)}
+
+			{/* TABLA */}
+			{datos &amp;&amp; datos.length > 0 &amp;&amp; (
+				&lt;TableContainer component={Paper}>
+					&lt;Table stickyHeader aria-label='courses table'>
+						&lt;TableHead>
+							&lt;TableRow>
+								&lt;TableCell>Nombre&lt;/TableCell>
+								&lt;TableCell align='center'>Online&lt;/TableCell>
+								&lt;TableCell align='center'>Inicio&lt;/TableCell>
+								&lt;TableCell align='center'>Duración&lt;/TableCell>
+								&lt;TableCell align='center'>Precio&lt;/TableCell>
+								&lt;TableCell>Imagen&lt;/TableCell>
+								&lt;TableCell align='center'>Acciones&lt;/TableCell>
+							&lt;/TableRow>
+						&lt;/TableHead>
+
+						&lt;TableBody>
+							{datos.map((row) => (
+								&lt;TableRow key={row.id_course}>
+									&lt;TableCell>{row.name}&lt;/TableCell>
+									&lt;TableCell align='center'>
+										{row.online ? "Sí" : "No"}
+									&lt;/TableCell>
+									&lt;TableCell align='center'>
+										{row.start_date}
+									&lt;/TableCell>
+									&lt;TableCell align='center'>
+										{row.duration} h
+									&lt;/TableCell>
+									&lt;TableCell align='center'>
+										{row.price} €
+									&lt;/TableCell>
+									&lt;TableCell>
+										&lt;Avatar
+											alt={row.name}
+											src={row.image_url}
+										/>
+									&lt;/TableCell>
+									&lt;TableCell align='center'>
+										&lt;Stack
+											direction={{
+												xs: "column",
+												sm: "row",
+											}}
+											spacing={1}
+											justifyContent='center'
+											alignItems='center'>
+											&lt;Button
+												variant='contained'
+												color='error'
+												onClick={() =>
+													handleDelete(row.id_course)
+												}>
+												&lt;DeleteIcon />
+											&lt;/Button>
+
+											&lt;Button
+												variant='contained'
+												color='primary'
+												onClick={() =>
+													navigate(
+														"/courses/edit/" +
+															row.id_course,
+													)
+												}>
+												&lt;EditIcon />
+											&lt;/Button>
+										&lt;/Stack>
+									&lt;/TableCell>
+								&lt;/TableRow>
+							))}
+						&lt;/TableBody>
+					&lt;/Table>
+				&lt;/TableContainer>
+			)}
+		&lt;/>
+	);
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-components_AltaCourse.html">components/AltaCourse</a></li><li><a href="module-components_AltaTeacher.html">components/AltaTeacher</a></li><li><a href="module-components_CoursesPerTeacherChart.html">components/CoursesPerTeacherChart</a></li><li><a href="module-components_EditarCourse.html">components/EditarCourse</a></li><li><a href="module-components_EditarTeacher.html">components/EditarTeacher</a></li><li><a href="module-components_Footer.html">components/Footer</a></li><li><a href="module-components_Inicio.html">components/Inicio</a></li><li><a href="module-components_ListadoCourses.html">components/ListadoCourses</a></li><li><a href="module-components_ListadoCoursesFiltro.html">components/ListadoCoursesFiltro</a></li><li><a href="module-components_ListadoTeachers.html">components/ListadoTeachers</a></li><li><a href="module-components_ListadoTeachersFiltro.html">components/ListadoTeachersFiltro</a></li><li><a href="module-components_NavBar.html">components/NavBar</a></li><li><a href="module-components_ScrollTopButton.html">components/ScrollTopButton</a></li><li><a href="module-pages_ErrorPage.html">pages/ErrorPage</a></li><li><a href="module-pages_Home.html">pages/Home</a></li></ul><h3>Global</h3><ul><li><a href="global.html#api">api</a></li><li><a href="global.html#router">router</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Feb 13 2026 20:19:56 GMT+0100 (hora estándar de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
